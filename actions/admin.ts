@@ -3,6 +3,7 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
+import { validateEmailDomain } from '@/lib/email-validation'
 import { revalidatePath } from 'next/cache'
 import { Role } from '@prisma/client'
 
@@ -68,6 +69,10 @@ export async function createUser(_state: unknown, formData: FormData) {
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
   const data = validated.data
+
+  // Verify the email domain has working mail servers
+  const domainError = await validateEmailDomain(data.email)
+  if (domainError) return { errors: { email: [domainError] } }
 
   // Pre-check email uniqueness for login-capable users
   if (data.role !== 'TEAM_MEMBER') {

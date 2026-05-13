@@ -2,6 +2,7 @@
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { requireAuth, requireTeamAccess, requireTeamAccessForEmployee } from '@/lib/auth'
+import { validateEmailDomain } from '@/lib/email-validation'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -38,6 +39,9 @@ export async function addEmployee(_state: unknown, formData: FormData) {
   })
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
+  const domainError = await validateEmailDomain(validated.data.email)
+  if (domainError) return { errors: { email: [domainError] } }
+
   await requireTeamAccess(validated.data.teamId)
 
   const { joinDate, ...rest } = validated.data
@@ -57,6 +61,9 @@ export async function updateEmployee(_state: unknown, formData: FormData) {
     joinDate: formData.get('joinDate'),
   })
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
+
+  const domainError = await validateEmailDomain(validated.data.email)
+  if (domainError) return { errors: { email: [domainError] } }
 
   await requireTeamAccessForEmployee(validated.data.employeeId)
 
