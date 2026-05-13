@@ -80,7 +80,8 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
         <div className="space-y-2">
           {team.employees.map((emp) => {
             const yearsAtCompany = differenceInYears(today, emp.joinDate)
-            const isAnniversaryMonth = isSameMonth(
+            const isActive = emp.status === 'ACTIVE'
+            const isAnniversaryMonth = isActive && isSameMonth(
               new Date(today.getFullYear(), today.getMonth()),
               new Date(today.getFullYear(), new Date(emp.joinDate).getMonth())
             )
@@ -88,14 +89,23 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
               <Link
                 key={emp.id}
                 href={`/dashboard/teams/${team.id}/members/${emp.id}`}
-                className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between hover:shadow-sm transition-shadow block"
+                className={`rounded-xl border p-4 flex items-center justify-between hover:shadow-sm transition-shadow block ${
+                  isActive ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-200 opacity-75'
+                }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">{emp.name}</span>
+                    <span className={`font-medium ${isActive ? 'text-gray-900' : 'text-gray-600'}`}>
+                      {emp.name}
+                    </span>
                     {isAnniversaryMonth && (
                       <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
                         🎂 Anniversary
+                      </span>
+                    )}
+                    {!isActive && (
+                      <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+                        Former
                       </span>
                     )}
                   </div>

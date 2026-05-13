@@ -39,6 +39,24 @@ export async function addEmployee(_state: unknown, formData: FormData) {
   redirect(`/dashboard/teams/${rest.teamId}/members/${employee.id}`)
 }
 
+export async function markEmployeeAsLeft(employeeId: string, leftDate: string) {
+  await requireAuth()
+  await prisma.employee.update({
+    where: { id: employeeId },
+    data: { status: 'LEFT', leftDate: new Date(leftDate) },
+  })
+  revalidatePath('/dashboard/teams')
+}
+
+export async function reactivateEmployee(employeeId: string) {
+  await requireAuth()
+  await prisma.employee.update({
+    where: { id: employeeId },
+    data: { status: 'ACTIVE', leftDate: null },
+  })
+  revalidatePath('/dashboard/teams')
+}
+
 export async function addPerformanceRecord(_state: unknown, formData: FormData) {
   const session = await requireAuth()
   const validated = PerformanceSchema.safeParse({

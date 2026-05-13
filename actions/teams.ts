@@ -1,7 +1,7 @@
 'use server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
-import { requireAuth, requireManager } from '@/lib/auth'
+import { requireAuth, requireManagerOrAdmin } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { Role } from '@prisma/client'
@@ -12,7 +12,7 @@ const TeamSchema = z.object({
 })
 
 export async function createTeam(_state: unknown, formData: FormData) {
-  const session = await requireManager()
+  const session = await requireManagerOrAdmin()
   const validated = TeamSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description') || undefined,
@@ -30,7 +30,7 @@ export async function createTeam(_state: unknown, formData: FormData) {
 }
 
 export async function assignTeamAccess(_state: unknown, formData: FormData) {
-  await requireManager()
+  await requireManagerOrAdmin()
   const teamId = formData.get('teamId') as string
   const userId = formData.get('userId') as string
   const role = formData.get('role') as Role
@@ -44,7 +44,7 @@ export async function assignTeamAccess(_state: unknown, formData: FormData) {
 }
 
 export async function removeTeamAccess(teamId: string, userId: string) {
-  await requireManager()
+  await requireManagerOrAdmin()
   await prisma.teamAccess.deleteMany({ where: { teamId, userId } })
   revalidatePath(`/dashboard/teams/${teamId}`)
 }

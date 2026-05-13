@@ -15,6 +15,12 @@ export default async function proxy(request: NextRequest) {
   }
 
   if (session?.userId && isPublicRoute) {
+    const target = session.role === 'ADMIN' ? '/admin' : '/dashboard'
+    return NextResponse.redirect(new URL(target, request.nextUrl))
+  }
+
+  // Block non-admins from /admin/*
+  if (path.startsWith('/admin') && session?.role !== 'ADMIN') {
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl))
   }
 

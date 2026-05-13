@@ -14,6 +14,7 @@ export async function GET(request: Request) {
   const year = today.getFullYear()
 
   const employees = await prisma.employee.findMany({
+    where: { status: 'ACTIVE' },
     select: { id: true, name: true, email: true, joinDate: true },
   })
 

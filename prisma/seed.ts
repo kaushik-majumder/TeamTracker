@@ -9,8 +9,15 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
+  const adminPassword = await bcrypt.hash('admin123', 12)
   const managerPassword = await bcrypt.hash('manager123', 12)
   const leadPassword = await bcrypt.hash('lead123', 12)
+
+  await prisma.user.upsert({
+    where: { email: 'admin@teamtracker.dev' },
+    update: {},
+    create: { name: 'Admin User', email: 'admin@teamtracker.dev', password: adminPassword, role: Role.ADMIN },
+  })
 
   const manager = await prisma.user.upsert({
     where: { email: 'manager@teamtracker.dev' },
@@ -67,6 +74,7 @@ async function main() {
   })
 
   console.log('Seed complete.')
+  console.log('  Admin: admin@teamtracker.dev / admin123')
   console.log('  Manager: manager@teamtracker.dev / manager123')
   console.log('  Team Lead: lead1@teamtracker.dev / lead123')
 }

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { format, differenceInYears, differenceInMonths } from 'date-fns'
 import { AddPerformanceForm } from './AddPerformanceForm'
 import { WorkflowButtons } from './WorkflowButtons'
+import { EmployeeStatusButton } from './EmployeeStatusButton'
 
 export default async function MemberDetailPage({
   params,
@@ -45,20 +46,35 @@ export default async function MemberDetailPage({
         <Link href={`/dashboard/teams/${id}`} className="text-sm text-gray-500 hover:text-gray-700">
           ← {employee.team.name}
         </Link>
-        <div className="flex items-start justify-between mt-2">
+        <div className="flex items-start justify-between mt-2 gap-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{employee.name}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-gray-900">{employee.name}</h1>
+              {employee.status === 'LEFT' && (
+                <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">
+                  Former employee
+                </span>
+              )}
+            </div>
             <p className="text-sm text-gray-500">{employee.title}</p>
             <p className="text-xs text-gray-400 mt-1">
               Joined {format(employee.joinDate, 'MMMM d, yyyy')} · {years}y {months}m tenure
+              {employee.status === 'LEFT' && employee.leftDate && (
+                <span> · Left {format(employee.leftDate, 'MMM d, yyyy')}</span>
+              )}
             </p>
           </div>
-          <WorkflowButtons
-            employeeId={employee.id}
-            teamId={id}
-            currentTitle={employee.title}
-            role={session.role}
-          />
+          <div className="flex flex-col gap-2 items-end">
+            {employee.status === 'ACTIVE' && (
+              <WorkflowButtons
+                employeeId={employee.id}
+                teamId={id}
+                currentTitle={employee.title}
+                role={session.role}
+              />
+            )}
+            <EmployeeStatusButton employeeId={employee.id} status={employee.status} />
+          </div>
         </div>
       </div>
 

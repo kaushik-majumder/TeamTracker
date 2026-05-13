@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       const today = new Date()
       const month = today.getMonth() + 1
       const employees = await prisma.employee.findMany({
-        where: { teamId: { in: teamIds } },
+        where: { teamId: { in: teamIds }, status: 'ACTIVE' },
         select: { joinDate: true },
       })
       return employees.filter((e) => new Date(e.joinDate).getMonth() + 1 === month).length

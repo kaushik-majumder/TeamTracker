@@ -15,6 +15,15 @@ export async function requireRole(role: Role) {
   return session
 }
 
-export async function requireManager() {
-  return requireRole(Role.MANAGER)
+export async function requireAdmin() {
+  return requireRole(Role.ADMIN)
+}
+
+// Managers OR admins can approve workflows, manage teams, etc.
+export async function requireManagerOrAdmin() {
+  const session = await requireAuth()
+  if (session.role !== Role.MANAGER && session.role !== Role.ADMIN) {
+    redirect('/dashboard')
+  }
+  return session
 }

@@ -7,6 +7,7 @@ datasource db {
 }
 
 enum Role {
+  ADMIN
   MANAGER
   TEAM_LEAD
 }
@@ -15,6 +16,11 @@ enum WorkflowStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  LEFT
 }
 
 model User {
@@ -60,14 +66,16 @@ model TeamAccess {
 }
 
 model Employee {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   name      String
   email     String
   title     String
   joinDate  DateTime
+  status    EmployeeStatus @default(ACTIVE)
+  leftDate  DateTime?
   teamId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   team               Team                @relation(fields: [teamId], references: [id], onDelete: Cascade)
   performanceRecords PerformanceRecord[]

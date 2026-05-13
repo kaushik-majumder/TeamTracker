@@ -1,7 +1,7 @@
 'use server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
-import { requireAuth, requireManager } from '@/lib/auth'
+import { requireAuth, requireManagerOrAdmin } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { WorkflowStatus } from '@prisma/client'
 
@@ -64,7 +64,7 @@ export async function createSalaryHikeRequest(_state: unknown, formData: FormDat
 }
 
 export async function reviewPromotionRequest(_state: unknown, formData: FormData) {
-  const session = await requireManager()
+  const session = await requireManagerOrAdmin()
   const validated = ReviewSchema.safeParse({
     requestId: formData.get('requestId'),
     status: formData.get('status'),
@@ -87,7 +87,7 @@ export async function reviewPromotionRequest(_state: unknown, formData: FormData
 }
 
 export async function reviewSalaryHikeRequest(_state: unknown, formData: FormData) {
-  const session = await requireManager()
+  const session = await requireManagerOrAdmin()
   const validated = ReviewSchema.safeParse({
     requestId: formData.get('requestId'),
     status: formData.get('status'),
