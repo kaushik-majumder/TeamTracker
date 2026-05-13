@@ -43,12 +43,24 @@ export default function NewMemberPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
             <input
               name="title"
+              list="designation-options"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Senior Engineer"
+              placeholder="e.g. Senior Developer"
             />
+            <datalist id="designation-options">
+              <option value="Junior Developer" />
+              <option value="Mid-level Developer" />
+              <option value="Senior Developer" />
+              <option value="Staff Engineer" />
+              <option value="Principal Engineer" />
+              <option value="QA Engineer" />
+              <option value="Product Designer" />
+              <option value="Product Manager" />
+              <option value="Engineering Manager" />
+            </datalist>
             {state?.errors?.title && <p className="text-xs text-red-500 mt-1">{state.errors.title[0]}</p>}
           </div>
 

@@ -1,5 +1,6 @@
 'use client'
-import { deleteUser, deleteEmployee } from '@/actions/admin'
+import { deleteUser } from '@/actions/admin'
+import { deleteEmployee } from '@/actions/employees'
 import { Trash2 } from 'lucide-react'
 import { useTransition } from 'react'
 

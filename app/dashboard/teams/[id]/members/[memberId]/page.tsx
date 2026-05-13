@@ -6,6 +6,8 @@ import { format, differenceInYears, differenceInMonths } from 'date-fns'
 import { AddPerformanceForm } from './AddPerformanceForm'
 import { WorkflowButtons } from './WorkflowButtons'
 import { EmployeeStatusButton } from './EmployeeStatusButton'
+import { EditMemberButton } from './EditMemberButton'
+import { DeleteMemberButton } from './DeleteMemberButton'
 
 export default async function MemberDetailPage({
   params,
@@ -16,7 +18,10 @@ export default async function MemberDetailPage({
   const session = await requireAuth()
 
   const employee = await prisma.employee.findFirst({
-    where: { id: memberId, teamId: id, team: { teamAccess: { some: { userId: session.userId } } } },
+    where:
+      session.role === 'ADMIN'
+        ? { id: memberId, teamId: id }
+        : { id: memberId, teamId: id, team: { teamAccess: { some: { userId: session.userId } } } },
     include: {
       team: true,
       performanceRecords: {
@@ -73,7 +78,17 @@ export default async function MemberDetailPage({
                 role={session.role}
               />
             )}
-            <EmployeeStatusButton employeeId={employee.id} status={employee.status} />
+            <div className="flex flex-wrap gap-2 justify-end">
+              <EditMemberButton
+                employeeId={employee.id}
+                defaultName={employee.name}
+                defaultEmail={employee.email}
+                defaultTitle={employee.title}
+                defaultJoinDate={employee.joinDate.toISOString().split('T')[0]}
+              />
+              <EmployeeStatusButton employeeId={employee.id} status={employee.status} />
+              <DeleteMemberButton employeeId={employee.id} teamId={id} name={employee.name} />
+            </div>
           </div>
         </div>
       </div>

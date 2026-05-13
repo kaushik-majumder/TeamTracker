@@ -121,13 +121,6 @@ export async function deleteUser(userId: string) {
   revalidatePath('/dashboard/admin/users')
 }
 
-export async function deleteEmployee(employeeId: string) {
-  await requireAdmin()
-  await prisma.employee.delete({ where: { id: employeeId } })
-  revalidatePath('/dashboard/admin/users')
-  revalidatePath('/dashboard/teams')
-}
-
 // ─── Teams ──────────────────────────────────────────────────────────────────
 
 const CreateTeamSchema = z.object({
