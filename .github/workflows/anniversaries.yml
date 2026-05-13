@@ -6,9 +6,12 @@ name: Daily Anniversary Emails
 
 on:
   schedule:
-    # 09:00 UTC daily. Adjust to match your team's timezone if you want a
-    # different local time. https://crontab.guru/
-    - cron: '0 9 * * *'
+    # 14:00 UTC = 9 AM EST (US Eastern, winter / standard time).
+    # NOTE: GitHub Actions cron is UTC only and does NOT shift for DST.
+    # During EDT (US daylight time, roughly mid-March → early November)
+    # this will fire at 10 AM ET. If you'd rather lock to EDT (9 AM most
+    # of the year), change to '0 13 * * *'.
+    - cron: '0 14 * * *'
 
   # Allow running it manually from the Actions tab as well
   workflow_dispatch:
