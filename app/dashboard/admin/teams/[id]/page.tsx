@@ -32,7 +32,7 @@ export default async function AdminTeamDetailPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href="/admin/teams" className="text-sm text-gray-500 hover:text-gray-700">← All Teams</Link>
+        <Link href="/dashboard/admin/teams" className="text-sm text-gray-500 hover:text-gray-700">← All Teams</Link>
         <div className="flex items-start justify-between mt-2">
           <div>
             <h1 className="text-xl font-bold text-gray-900">{team.name}</h1>
@@ -77,7 +77,7 @@ export default async function AdminTeamDetailPage({
           {availableUsers.length === 0 ? (
             <p className="text-sm text-gray-400">
               No more users available to assign.{' '}
-              <Link href="/admin/users" className="text-blue-600 hover:underline">
+              <Link href="/dashboard/admin/users" className="text-blue-600 hover:underline">
                 Create one
               </Link>
             </p>

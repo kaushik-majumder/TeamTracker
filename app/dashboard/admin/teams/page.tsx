@@ -26,7 +26,7 @@ export default async function AdminTeamsPage() {
               const managers = team.teamAccess.filter((a) => a.user.role === 'MANAGER')
               const leads = team.teamAccess.filter((a) => a.user.role === 'TEAM_LEAD')
               return (
-                <Link key={team.id} href={`/admin/teams/${team.id}`} className="bg-white rounded-xl border border-gray-200 p-4 block hover:shadow-sm transition-shadow">
+                <Link key={team.id} href={`/dashboard/admin/teams/${team.id}`} className="bg-white rounded-xl border border-gray-200 p-4 block hover:shadow-sm transition-shadow">
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="font-medium text-gray-900">{team.name}</p>

@@ -4,14 +4,20 @@ import { DeleteUserButton } from './DeleteUserButton'
 import { format } from 'date-fns'
 
 export default async function AdminUsersPage() {
-  const users = await prisma.user.findMany({
-    include: { teamAccess: { include: { team: { select: { name: true } } } } },
-    orderBy: { createdAt: 'desc' },
-  })
+  const [users, teams] = await Promise.all([
+    prisma.user.findMany({
+      include: { teamAccess: { include: { team: { select: { name: true } } } } },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.team.findMany({ orderBy: { name: 'asc' }, select: { id: true, name: true } }),
+  ])
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-gray-900 mb-6">User Management</h1>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900">Manage Users</h1>
+        <p className="text-sm text-gray-500 mt-1">Create managers and team leads, optionally assigning them to a team.</p>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-3">
@@ -24,7 +30,7 @@ export default async function AdminUsersPage() {
                     u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
                     u.role === 'MANAGER' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
                   }`}>
-                    {u.role}
+                    {u.role === 'TEAM_LEAD' ? 'Team Lead' : u.role.charAt(0) + u.role.slice(1).toLowerCase()}
                   </span>
                 </div>
                 <p className="text-sm text-gray-500">{u.email}</p>
@@ -41,9 +47,9 @@ export default async function AdminUsersPage() {
         </div>
 
         <div>
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-8">
             <h2 className="font-semibold text-gray-900 mb-3">Create User</h2>
-            <CreateUserForm />
+            <CreateUserForm teams={teams} />
           </div>
         </div>
       </div>

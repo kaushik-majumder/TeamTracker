@@ -9,8 +9,11 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params
   const session = await requireAuth()
 
+  const isAdmin = session.role === 'ADMIN'
   const team = await prisma.team.findFirst({
-    where: { id, teamAccess: { some: { userId: session.userId } } },
+    where: isAdmin
+      ? { id }
+      : { id, teamAccess: { some: { userId: session.userId } } },
     include: {
       employees: {
         include: { _count: { select: { performanceRecords: true } } },
@@ -45,8 +48,8 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
-      {/* Team access section (manager only) */}
-      {session.role === 'MANAGER' && (
+      {/* Team access section (manager + admin) */}
+      {(session.role === 'MANAGER' || isAdmin) && (
         <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
           <h2 className="font-semibold text-gray-900 mb-3">Team Access</h2>
           <div className="space-y-2">

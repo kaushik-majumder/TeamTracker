@@ -15,12 +15,11 @@ export default async function proxy(request: NextRequest) {
   }
 
   if (session?.userId && isPublicRoute) {
-    const target = session.role === 'ADMIN' ? '/admin' : '/dashboard'
-    return NextResponse.redirect(new URL(target, request.nextUrl))
+    return NextResponse.redirect(new URL('/dashboard', request.nextUrl))
   }
 
-  // Block non-admins from /admin/*
-  if (path.startsWith('/admin') && session?.role !== 'ADMIN') {
+  // Only admins can access admin subroutes
+  if (path.startsWith('/dashboard/admin') && session?.role !== 'ADMIN') {
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl))
   }
 

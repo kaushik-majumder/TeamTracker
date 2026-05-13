@@ -5,8 +5,9 @@ import { Users } from 'lucide-react'
 
 export default async function TeamsPage() {
   const session = await requireAuth()
+  const isAdmin = session.role === 'ADMIN'
   const teams = await prisma.team.findMany({
-    where: { teamAccess: { some: { userId: session.userId } } },
+    where: isAdmin ? {} : { teamAccess: { some: { userId: session.userId } } },
     include: {
       _count: { select: { employees: true } },
       teamAccess: { include: { user: { select: { name: true, role: true } } } },
@@ -18,12 +19,12 @@ export default async function TeamsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-900">Teams</h1>
-        {session.role === 'MANAGER' && (
+        {isAdmin && (
           <Link
-            href="/dashboard/teams/new"
+            href="/dashboard/admin/teams"
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
-            + New Team
+            Manage Teams
           </Link>
         )}
       </div>
