@@ -112,8 +112,21 @@ model PerformanceRecord {
   createdBy  String?
   createdAt  DateTime @default(now())
 
-  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  author   User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  employee    Employee                @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  author      User?                   @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  attachments PerformanceAttachment[]
+}
+
+model PerformanceAttachment {
+  id                  String   @id @default(cuid())
+  performanceRecordId String
+  filename            String
+  mimeType            String
+  sizeBytes           Int
+  dataUrl             String
+  createdAt           DateTime @default(now())
+
+  record PerformanceRecord @relation(fields: [performanceRecordId], references: [id], onDelete: Cascade)
 }
 
 model PromotionRequest {

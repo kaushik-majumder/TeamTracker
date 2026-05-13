@@ -8,6 +8,7 @@ import { WorkflowButtons } from './WorkflowButtons'
 import { EmployeeStatusButton } from './EmployeeStatusButton'
 import { EditMemberButton } from './EditMemberButton'
 import { DeleteMemberButton } from './DeleteMemberButton'
+import { PerformanceRecordItem } from './PerformanceRecordItem'
 
 export default async function MemberDetailPage({
   params,
@@ -25,7 +26,10 @@ export default async function MemberDetailPage({
     include: {
       team: true,
       performanceRecords: {
-        include: { author: { select: { name: true } } },
+        include: {
+          author: { select: { name: true } },
+          attachments: { select: { id: true, filename: true, mimeType: true, sizeBytes: true, dataUrl: true } },
+        },
         orderBy: { createdAt: 'desc' },
       },
       promotionRequests: { orderBy: { createdAt: 'desc' }, take: 3 },
@@ -104,22 +108,16 @@ export default async function MemberDetailPage({
           ) : (
             <div className="mt-4 space-y-3">
               {employee.performanceRecords.map((rec) => (
-                <div key={rec.id} className="border-t border-gray-100 pt-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{rec.period}</span>
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className={i < rec.rating ? 'text-amber-400' : 'text-gray-200'}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">{rec.notes}</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    by {rec.author?.name ?? 'Former user'} · {format(rec.createdAt, 'MMM d, yyyy')}
-                  </p>
-                </div>
+                <PerformanceRecordItem
+                  key={rec.id}
+                  id={rec.id}
+                  period={rec.period}
+                  rating={rec.rating}
+                  notes={rec.notes}
+                  authorName={rec.author?.name ?? 'Former user'}
+                  createdAt={rec.createdAt}
+                  attachments={rec.attachments}
+                />
               ))}
             </div>
           )}

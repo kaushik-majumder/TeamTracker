@@ -106,6 +106,9 @@ export async function reactivateEmployee(employeeId: string) {
   revalidatePath('/dashboard/teams')
 }
 
+const MAX_FILE_BYTES = 3 * 1024 * 1024 // 3MB per file
+const MAX_TOTAL_BYTES = 8 * 1024 * 1024 // 8MB total per record
+
 export async function addPerformanceRecord(_state: unknown, formData: FormData) {
   const validated = PerformanceSchema.safeParse({
     employeeId: formData.get('employeeId'),
@@ -116,9 +119,54 @@ export async function addPerformanceRecord(_state: unknown, formData: FormData) 
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
   const session = await requireTeamAccessForEmployee(validated.data.employeeId)
+
+  // Parse attachments
+  const files = formData.getAll('attachments').filter((f): f is File => f instanceof File && f.size > 0)
+  let totalBytes = 0
+  for (const f of files) {
+    if (f.size > MAX_FILE_BYTES) {
+      return { message: `"${f.name}" is over 3MB — try a smaller file.` }
+    }
+    totalBytes += f.size
+  }
+  if (totalBytes > MAX_TOTAL_BYTES) {
+    return { message: 'Attachments total over 8MB — please reduce the upload.' }
+  }
+
+  const attachmentRows = await Promise.all(
+    files.map(async (f) => {
+      const buffer = Buffer.from(await f.arrayBuffer())
+      const dataUrl = `data:${f.type || 'application/octet-stream'};base64,${buffer.toString('base64')}`
+      return {
+        filename: f.name,
+        mimeType: f.type || 'application/octet-stream',
+        sizeBytes: f.size,
+        dataUrl,
+      }
+    })
+  )
+
   await prisma.performanceRecord.create({
-    data: { ...validated.data, createdBy: session.userId },
+    data: {
+      ...validated.data,
+      createdBy: session.userId,
+      attachments: { create: attachmentRows },
+    },
   })
   revalidatePath(`/dashboard/teams`)
   return { success: true }
+}
+
+export async function deletePerformanceRecord(recordId: string) {
+  const session = await requireAuth()
+  const record = await prisma.performanceRecord.findUnique({
+    where: { id: recordId },
+    select: { employeeId: true },
+  })
+  if (!record) return
+
+  // Reuse the employee-level access check
+  await requireTeamAccessForEmployee(record.employeeId)
+  await prisma.performanceRecord.delete({ where: { id: recordId } })
+  revalidatePath('/dashboard/teams')
 }
