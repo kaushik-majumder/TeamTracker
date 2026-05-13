@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
-import { levelOf } from '@/lib/hierarchy'
+import { levelOf, propagateAccessUpChain } from '@/lib/hierarchy'
 import { revalidatePath } from 'next/cache'
 
 const SetReportsToSchema = z.object({
@@ -58,6 +58,14 @@ export async function setReportsTo(_state: unknown, formData: FormData) {
     data: { reportsToId },
   })
 
+  // Cascade team access up the new chain so the supervisor (and anyone above
+  // them) automatically gains access to all of this user's teams.
+  if (reportsToId) {
+    await propagateAccessUpChain(userId)
+  }
+
   revalidatePath('/dashboard/admin/hierarchy')
+  revalidatePath('/dashboard/admin/teams')
+  revalidatePath('/dashboard/teams')
   return { success: true }
 }

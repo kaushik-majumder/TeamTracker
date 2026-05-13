@@ -53,6 +53,58 @@ export async function findApproversForTeam(teamId: string, roles: Role[]) {
 }
 
 /**
+ * Walks the reports-to chain UP from `userId` and ensures every supervisor
+ * has TeamAccess to all teams `userId` currently has access to.
+ *
+ * - Supervisor gets access at their own User.role (their base rank).
+ * - Existing TeamAccess rows are preserved (we don't overwrite roles).
+ * - Stops at the first ADMIN supervisor (admins don't need TeamAccess rows).
+ * - Cycle-safe via a visited set.
+ *
+ * Call this AFTER you've created or updated TeamAccess rows for a user, or
+ * after setting their reportsToId, to cascade access upward.
+ */
+export async function propagateAccessUpChain(userId: string) {
+  const myAccess = await prisma.teamAccess.findMany({
+    where: { userId },
+    select: { teamId: true },
+  })
+  if (myAccess.length === 0) return
+  const teamIds = myAccess.map((a) => a.teamId)
+
+  const visited = new Set<string>([userId])
+  let cursor: string = userId
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const next: { reportsTo: { id: string; role: Role } | null } | null =
+      await prisma.user.findUnique({
+        where: { id: cursor },
+        select: { reportsTo: { select: { id: true, role: true } } },
+      })
+    const supervisor = next?.reportsTo
+    if (!supervisor) break
+    if (visited.has(supervisor.id)) break
+    visited.add(supervisor.id)
+
+    if (supervisor.role === 'ADMIN') break // admins see everything; no row needed
+
+    // Grant access to every team the original user has — preserve existing role if any.
+    await prisma.$transaction(
+      teamIds.map((teamId) =>
+        prisma.teamAccess.upsert({
+          where: { userId_teamId: { userId: supervisor.id, teamId } },
+          create: { userId: supervisor.id, teamId, role: supervisor.role },
+          update: {}, // keep existing role
+        })
+      )
+    )
+
+    cursor = supervisor.id
+  }
+}
+
+/**
  * Returns the user's explicit direct supervisor (via reportsToId).
  * If unset, returns null and callers should fall back to team-based routing.
  */

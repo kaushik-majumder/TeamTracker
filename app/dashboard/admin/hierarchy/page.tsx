@@ -36,10 +36,14 @@ export default async function HierarchyPage() {
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900">Reporting Hierarchy</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Set each user&apos;s direct supervisor. Promotion and salary hike requests are routed up
-          this chain first; if no supervisor is set, the request falls back to any qualified
-          approver on the team.
+          Set each user&apos;s direct supervisor. Workflow requests are routed up this chain first.
         </p>
+        <div className="mt-3 bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-900">
+          <strong>Auto-propagation:</strong> when you set a supervisor, that person (and anyone
+          above them) automatically gains access to every team this user has access to.
+          Existing team roles are preserved — new access is granted at the supervisor&apos;s own
+          rank. The same cascade kicks in whenever you add someone to a team.
+        </div>
       </div>
 
       <div className="space-y-6">

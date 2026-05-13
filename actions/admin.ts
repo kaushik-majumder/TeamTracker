@@ -3,6 +3,7 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
+import { propagateAccessUpChain } from '@/lib/hierarchy'
 import { validateEmailDomain } from '@/lib/email-validation'
 import { revalidatePath } from 'next/cache'
 import { Role } from '@prisma/client'
@@ -91,12 +92,11 @@ export async function createUser(_state: unknown, formData: FormData) {
     if (existing) return { message: 'A user with that email already exists' }
   }
 
-  await prisma.$transaction(async (tx) => {
+  const newUserId = await prisma.$transaction(async (tx) => {
     // Resolve target team(s)
     const teamIds: string[] = []
 
     if (isMultiTeamRole) {
-      // Multi-team flow: any existing selected + an optionally created new team
       teamIds.push(...data.selectedTeamIds)
       if (data.newTeamName) {
         const team = await tx.team.create({
@@ -105,7 +105,6 @@ export async function createUser(_state: unknown, formData: FormData) {
         teamIds.push(team.id)
       }
     } else {
-      // Single-team flow (TEAM_LEAD / TEAM_MEMBER)
       if (data.teamMode === 'existing' && data.existingTeamId) {
         teamIds.push(data.existingTeamId)
       } else if (data.teamMode === 'new' && data.newTeamName) {
@@ -123,22 +122,27 @@ export async function createUser(_state: unknown, formData: FormData) {
           email: data.email,
           title: data.designation!,
           joinDate: new Date(data.joinDate!),
-          teamId: teamIds[0]!, // employees belong to exactly one team
+          teamId: teamIds[0]!,
         },
       })
+      return null
     } else {
       const hashed = await bcrypt.hash(data.password!, 12)
       const user = await tx.user.create({
         data: { name: data.name, email: data.email, password: hashed, role: data.role as Role },
       })
-      // Create a TeamAccess row for each team
       for (const teamId of teamIds) {
         await tx.teamAccess.create({
           data: { userId: user.id, teamId, role: data.role as Role },
         })
       }
+      return user.id
     }
   })
+
+  // If we created a User with team access, cascade access up their (currently empty)
+  // supervisor chain. Safe no-op when reportsTo is unset.
+  if (newUserId) await propagateAccessUpChain(newUserId)
 
   revalidatePath('/dashboard/admin/users')
   revalidatePath('/dashboard/admin/teams')
@@ -198,7 +202,11 @@ export async function assignUserToTeam(_state: unknown, formData: FormData) {
     update: { role: role as Role },
     create: { userId, teamId, role: role as Role },
   })
+  // Cascade this team to all supervisors above the user.
+  await propagateAccessUpChain(userId)
+
   revalidatePath(`/dashboard/admin/teams/${teamId}`)
+  revalidatePath('/dashboard/teams')
   return { success: true }
 }
 
