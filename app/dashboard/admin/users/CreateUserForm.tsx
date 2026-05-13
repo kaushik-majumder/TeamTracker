@@ -4,13 +4,38 @@ import { createUser } from '@/actions/admin'
 
 type Props = { teams: { id: string; name: string }[] }
 
+const DESIGNATION_SUGGESTIONS = [
+  'Junior Developer',
+  'Mid-level Developer',
+  'Senior Developer',
+  'Staff Engineer',
+  'Principal Engineer',
+  'QA Engineer',
+  'Product Designer',
+  'Product Manager',
+  'Engineering Manager',
+]
+
 export function CreateUserForm({ teams }: Props) {
   const [state, action, pending] = useActionState(createUser, undefined)
+  const [role, setRole] = useState<'MANAGER' | 'TEAM_LEAD' | 'TEAM_MEMBER'>('MANAGER')
   const [teamMode, setTeamMode] = useState<'none' | 'existing' | 'new'>('none')
   const s = state as { errors?: Record<string, string[]>; message?: string; success?: boolean } | undefined
 
+  const isMember = role === 'TEAM_MEMBER'
+
+  // Team members must always have a team assigned
   useEffect(() => {
-    if (s?.success) setTeamMode('none')
+    if (isMember && teamMode === 'none') {
+      setTeamMode(teams.length > 0 ? 'existing' : 'new')
+    }
+  }, [isMember, teamMode, teams.length])
+
+  useEffect(() => {
+    if (s?.success) {
+      setRole('MANAGER')
+      setTeamMode('none')
+    }
   }, [s?.success])
 
   return (
@@ -28,40 +53,84 @@ export function CreateUserForm({ teams }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Password</label>
-        <input name="password" type="password" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="At least 6 characters" />
-        {s?.errors?.password && <p className="text-xs text-red-500 mt-1">{s.errors.password[0]}</p>}
-      </div>
-
-      <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
-        <select name="role" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select
+          name="role"
+          value={role}
+          onChange={(e) => setRole(e.target.value as typeof role)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           <option value="MANAGER">Manager</option>
           <option value="TEAM_LEAD">Team Lead</option>
+          <option value="TEAM_MEMBER">Team Member</option>
         </select>
-        <p className="text-[11px] text-gray-400 mt-1">Admin role is reserved and cannot be assigned.</p>
+        <p className="text-[11px] text-gray-400 mt-1">
+          {isMember
+            ? 'Team members do not log in — they are tracked records only.'
+            : 'Admin role is reserved and cannot be assigned.'}
+        </p>
       </div>
 
+      {/* Password (Manager / Team Lead only) */}
+      {!isMember && (
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Password</label>
+          <input name="password" type="password" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="At least 6 characters" />
+          {s?.errors?.password && <p className="text-xs text-red-500 mt-1">{s.errors.password[0]}</p>}
+        </div>
+      )}
+
+      {/* Designation + Join date (Team Member only) */}
+      {isMember && (
+        <>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Designation</label>
+            <input
+              name="designation"
+              list="designation-options"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. Senior Developer"
+            />
+            <datalist id="designation-options">
+              {DESIGNATION_SUGGESTIONS.map((d) => <option key={d} value={d} />)}
+            </datalist>
+            {s?.errors?.designation && <p className="text-xs text-red-500 mt-1">{s.errors.designation[0]}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Join Date</label>
+            <input name="joinDate" type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            {s?.errors?.joinDate && <p className="text-xs text-red-500 mt-1">{s.errors.joinDate[0]}</p>}
+          </div>
+        </>
+      )}
+
+      {/* Team assignment */}
       <div className="pt-3 border-t border-gray-100">
-        <label className="block text-xs font-medium text-gray-600 mb-2">Team Assignment</label>
+        <label className="block text-xs font-medium text-gray-600 mb-2">
+          Team Assignment {isMember && <span className="text-red-500">*</span>}
+        </label>
         <input type="hidden" name="teamMode" value={teamMode} />
 
         <div className="space-y-2 mb-3">
-          {(['none', 'existing', 'new'] as const).map((mode) => (
-            <label key={mode} className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="radio"
-                checked={teamMode === mode}
-                onChange={() => setTeamMode(mode)}
-                className="text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-gray-700">
-                {mode === 'none' && 'Skip — assign later'}
-                {mode === 'existing' && 'Assign to existing team'}
-                {mode === 'new' && 'Create a new team'}
-              </span>
-            </label>
-          ))}
+          {(['none', 'existing', 'new'] as const).map((mode) => {
+            // Team members can't skip team assignment
+            if (mode === 'none' && isMember) return null
+            return (
+              <label key={mode} className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  checked={teamMode === mode}
+                  onChange={() => setTeamMode(mode)}
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">
+                  {mode === 'none' && 'Skip — assign later'}
+                  {mode === 'existing' && 'Assign to existing team'}
+                  {mode === 'new' && 'Create a new team'}
+                </span>
+              </label>
+            )
+          })}
         </div>
 
         {teamMode === 'existing' && (
@@ -97,13 +166,14 @@ export function CreateUserForm({ teams }: Props) {
             />
           </div>
         )}
+        {s?.errors?.teamMode && <p className="text-xs text-red-500 mt-1">{s.errors.teamMode[0]}</p>}
       </div>
 
       {s?.message && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{s.message}</p>}
-      {s?.success && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">User created.</p>}
+      {s?.success && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">Created successfully.</p>}
 
       <button type="submit" disabled={pending} className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors">
-        {pending ? 'Creating…' : 'Create User'}
+        {pending ? 'Creating…' : isMember ? 'Add Team Member' : 'Create User'}
       </button>
     </form>
   )
