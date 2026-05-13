@@ -52,6 +52,44 @@ export async function findApproversForTeam(teamId: string, roles: Role[]) {
   return access.map((a) => ({ userId: a.user.id, email: a.user.email, name: a.user.name }))
 }
 
+/**
+ * Can `viewerId` edit/delete `targetUserId`?
+ * Rule: admin bypasses everything; otherwise, viewer and target must share
+ * a team where viewer's per-team role outranks the target's.
+ */
+export async function canManageUser(opts: {
+  viewerId: string
+  viewerBaseRole: Role
+  targetUserId: string
+}): Promise<boolean> {
+  if (opts.viewerId === opts.targetUserId) return false // no self-edits via this path
+  if (opts.viewerBaseRole === 'ADMIN') return true
+
+  // Don't allow editing of other admins by non-admins
+  const target = await prisma.user.findUnique({
+    where: { id: opts.targetUserId },
+    select: { role: true },
+  })
+  if (!target || target.role === 'ADMIN') return false
+
+  const [viewerAccess, targetAccess] = await Promise.all([
+    prisma.teamAccess.findMany({
+      where: { userId: opts.viewerId },
+      select: { teamId: true, role: true },
+    }),
+    prisma.teamAccess.findMany({
+      where: { userId: opts.targetUserId },
+      select: { teamId: true, role: true },
+    }),
+  ])
+
+  for (const v of viewerAccess) {
+    const t = targetAccess.find((x) => x.teamId === v.teamId)
+    if (t && levelOf(v.role) > levelOf(t.role)) return true
+  }
+  return false
+}
+
 /** Admins serve as the fallback approver pool when no role-specific approver exists. */
 export async function findAdmins() {
   const admins = await prisma.user.findMany({

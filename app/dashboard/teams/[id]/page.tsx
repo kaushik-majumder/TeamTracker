@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { format, differenceInYears, isSameMonth } from 'date-fns'
 import { UserPlus, Star } from 'lucide-react'
 import { LeadershipWorkflowButtons } from './LeadershipWorkflowButtons'
+import { EditUserButton } from '@/components/EditUserButton'
 import { levelOf } from '@/lib/hierarchy'
 import { Role } from '@prisma/client'
 
@@ -80,6 +81,12 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
                 levelOf(viewerTeamRole) > levelOf(access.role) &&
                 viewerTeamRole !== 'ADMIN' // admin doesn't recommend, they approve
 
+              // Same outranking rule controls whether the viewer can edit this person.
+              const canEdit =
+                viewerTeamRole !== null &&
+                access.userId !== session.userId &&
+                (isAdmin || levelOf(viewerTeamRole) > levelOf(access.role))
+
               return (
                 <div key={access.id} className="flex items-center justify-between gap-3 text-sm">
                   <div className="min-w-0 flex-1">
@@ -90,6 +97,13 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
                     <span className={`text-xs px-2 py-0.5 rounded-full ${roleBadgeColor[access.role]}`}>
                       {roleLabel[access.role]}
                     </span>
+                    {canEdit && (
+                      <EditUserButton
+                        userId={access.userId}
+                        defaultName={access.user.name}
+                        defaultEmail={access.user.email}
+                      />
+                    )}
                     {canRecommend && (
                       <LeadershipWorkflowButtons
                         subjectUserId={access.userId}

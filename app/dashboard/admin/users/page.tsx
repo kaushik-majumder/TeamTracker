@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import { CreateUserForm } from './CreateUserForm'
 import { DeletePersonButton } from './DeletePersonButton'
+import { EditUserButton } from '@/components/EditUserButton'
 import { format } from 'date-fns'
 
 export default async function AdminUsersPage() {
@@ -62,7 +63,12 @@ export default async function AdminUsersPage() {
                 )}
                 <p className="text-xs text-gray-400 mt-1">Joined {format(u.createdAt, 'MMM d, yyyy')}</p>
               </div>
-              {u.role !== 'ADMIN' && <DeletePersonButton id={u.id} name={u.name} kind="user" />}
+              {u.role !== 'ADMIN' && (
+                <div className="flex items-center gap-1">
+                  <EditUserButton userId={u.id} defaultName={u.name} defaultEmail={u.email} />
+                  <DeletePersonButton id={u.id} name={u.name} kind="user" />
+                </div>
+              )}
             </div>
           ))}
 
