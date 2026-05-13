@@ -15,16 +15,20 @@ const CreatePersonSchema = z.object({
   email: z.email({ error: 'Invalid email' }),
   role: z.enum(['MANAGING_DIRECTOR', 'MANAGER', 'TEAM_LEAD', 'TEAM_MEMBER']),
 
-  // Manager/Lead only
+  // Manager/Lead/MD only
   password: z.string().optional(),
 
   // Team member only
   designation: z.string().optional(),
   joinDate: z.string().optional(),
 
-  // Team assignment
+  // Team assignment.
+  // Single-team flow (used by TEAM_MEMBER, TEAM_LEAD):
   teamMode: z.enum(['none', 'existing', 'new']).default('none'),
   existingTeamId: z.string().optional(),
+  // Multi-team flow (used by MANAGER, MANAGING_DIRECTOR):
+  selectedTeamIds: z.array(z.string()).default([]),
+  // New team optionally created alongside either flow:
   newTeamName: z.string().optional(),
   newTeamDescription: z.string().optional(),
 }).superRefine((val, ctx) => {
@@ -63,12 +67,19 @@ export async function createUser(_state: unknown, formData: FormData) {
     joinDate: formData.get('joinDate') || undefined,
     teamMode: formData.get('teamMode') ?? 'none',
     existingTeamId: formData.get('existingTeamId') || undefined,
+    selectedTeamIds: formData.getAll('selectedTeamIds').filter(Boolean) as string[],
     newTeamName: formData.get('newTeamName') || undefined,
     newTeamDescription: formData.get('newTeamDescription') || undefined,
   })
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
   const data = validated.data
+  const isMultiTeamRole = data.role === 'MANAGER' || data.role === 'MANAGING_DIRECTOR'
+
+  // For managers/MDs, require at least one team via multi-select or new team
+  if (isMultiTeamRole && data.selectedTeamIds.length === 0 && !data.newTeamName) {
+    // Not strictly required — they can be created and assigned later, so we just allow it.
+  }
 
   // Verify the email domain has working mail servers
   const domainError = await validateEmailDomain(data.email)
@@ -81,14 +92,28 @@ export async function createUser(_state: unknown, formData: FormData) {
   }
 
   await prisma.$transaction(async (tx) => {
-    let teamId: string | null = null
-    if (data.teamMode === 'existing' && data.existingTeamId) {
-      teamId = data.existingTeamId
-    } else if (data.teamMode === 'new' && data.newTeamName) {
-      const team = await tx.team.create({
-        data: { name: data.newTeamName, description: data.newTeamDescription },
-      })
-      teamId = team.id
+    // Resolve target team(s)
+    const teamIds: string[] = []
+
+    if (isMultiTeamRole) {
+      // Multi-team flow: any existing selected + an optionally created new team
+      teamIds.push(...data.selectedTeamIds)
+      if (data.newTeamName) {
+        const team = await tx.team.create({
+          data: { name: data.newTeamName, description: data.newTeamDescription },
+        })
+        teamIds.push(team.id)
+      }
+    } else {
+      // Single-team flow (TEAM_LEAD / TEAM_MEMBER)
+      if (data.teamMode === 'existing' && data.existingTeamId) {
+        teamIds.push(data.existingTeamId)
+      } else if (data.teamMode === 'new' && data.newTeamName) {
+        const team = await tx.team.create({
+          data: { name: data.newTeamName, description: data.newTeamDescription },
+        })
+        teamIds.push(team.id)
+      }
     }
 
     if (data.role === 'TEAM_MEMBER') {
@@ -98,7 +123,7 @@ export async function createUser(_state: unknown, formData: FormData) {
           email: data.email,
           title: data.designation!,
           joinDate: new Date(data.joinDate!),
-          teamId: teamId!,
+          teamId: teamIds[0]!, // employees belong to exactly one team
         },
       })
     } else {
@@ -106,7 +131,8 @@ export async function createUser(_state: unknown, formData: FormData) {
       const user = await tx.user.create({
         data: { name: data.name, email: data.email, password: hashed, role: data.role as Role },
       })
-      if (teamId) {
+      // Create a TeamAccess row for each team
+      for (const teamId of teamIds) {
         await tx.teamAccess.create({
           data: { userId: user.id, teamId, role: data.role as Role },
         })
