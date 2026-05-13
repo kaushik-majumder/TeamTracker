@@ -53,6 +53,21 @@ export async function findApproversForTeam(teamId: string, roles: Role[]) {
 }
 
 /**
+ * Returns the user's explicit direct supervisor (via reportsToId).
+ * If unset, returns null and callers should fall back to team-based routing.
+ */
+export async function getDirectSupervisor(userId: string) {
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      reportsTo: { select: { id: true, email: true, name: true } },
+    },
+  })
+  if (!u?.reportsTo) return null
+  return { userId: u.reportsTo.id, email: u.reportsTo.email, name: u.reportsTo.name }
+}
+
+/**
  * Can `viewerId` edit/delete `targetUserId`?
  * Rule: admin bypasses everything; otherwise, viewer and target must share
  * a team where viewer's per-team role outranks the target's.

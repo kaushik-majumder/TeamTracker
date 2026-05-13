@@ -40,14 +40,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const all = [...promos, ...salaries]
     if (all.length > 0) {
       const recIds = [...new Set(all.map((r) => r.recommendedBy))]
-      const recAccess = await prisma.teamAccess.findMany({
-        where: { userId: { in: recIds } },
-        select: { userId: true, teamId: true, role: true },
-      })
+      const [recAccess, recSupervisors] = await Promise.all([
+        prisma.teamAccess.findMany({
+          where: { userId: { in: recIds } },
+          select: { userId: true, teamId: true, role: true },
+        }),
+        prisma.user.findMany({
+          where: { id: { in: recIds } },
+          select: { id: true, reportsToId: true },
+        }),
+      ])
       const recKey = (uid: string, tid: string) => `${uid}|${tid}`
       const recRoleMap = new Map(recAccess.map((r) => [recKey(r.userId, r.teamId), r.role]))
+      const supervisorOf = new Map(recSupervisors.map((u) => [u.id, u.reportsToId]))
 
       pendingReviewable = all.filter((r) => {
+        if (supervisorOf.get(r.recommendedBy) === session.userId) return true
         const viewerRole = viewerRoleByTeam.get(r.teamId) as Role | undefined
         const recRole = recRoleMap.get(recKey(r.recommendedBy, r.teamId)) as Role | undefined
         if (!viewerRole || !recRole) return false

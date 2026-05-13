@@ -53,16 +53,25 @@ export default async function WorkflowsPage() {
   const recommenderIds = [
     ...new Set([...promotions, ...salaryHikes].map((r) => r.recommendedBy)),
   ]
-  const recommenderAccess = await prisma.teamAccess.findMany({
-    where: { userId: { in: recommenderIds } },
-    select: { userId: true, teamId: true, role: true },
-  })
-  // recommender's role on their request's team:
+  const [recommenderAccess, recommenderSupervisors] = await Promise.all([
+    prisma.teamAccess.findMany({
+      where: { userId: { in: recommenderIds } },
+      select: { userId: true, teamId: true, role: true },
+    }),
+    prisma.user.findMany({
+      where: { id: { in: recommenderIds } },
+      select: { id: true, reportsToId: true },
+    }),
+  ])
   const recRoleKey = (userId: string, teamId: string) => `${userId}|${teamId}`
   const recRoleMap = new Map(recommenderAccess.map((r) => [recRoleKey(r.userId, r.teamId), r.role]))
+  const supervisorByRecommender = new Map(recommenderSupervisors.map((u) => [u.id, u.reportsToId]))
 
   function canReviewThis(opts: { recommenderId: string; teamId: string }): boolean {
     if (isAdmin) return true
+    // Direct supervisor of the recommender can review.
+    if (supervisorByRecommender.get(opts.recommenderId) === session.userId) return true
+    // Otherwise fall back to role-on-team check.
     const viewerRole = myTeamRole.get(opts.teamId)
     if (!viewerRole) return false
     const recRole = recRoleMap.get(recRoleKey(opts.recommenderId, opts.teamId)) as Role | undefined

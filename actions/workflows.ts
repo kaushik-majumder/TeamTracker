@@ -5,7 +5,7 @@ import { requireAuth, requireTeamAccess } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { notify, notifyAll } from '@/lib/notifications'
 import { workflowSubmittedEmail, workflowReviewedEmail } from '@/lib/email'
-import { approverRoleFor, findApproversForTeam, findAdmins } from '@/lib/hierarchy'
+import { approverRoleFor, findApproversForTeam, findAdmins, getDirectSupervisor } from '@/lib/hierarchy'
 import { Role, WorkflowStatus } from '@prisma/client'
 
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
@@ -117,11 +117,17 @@ export async function createPromotionRequest(_state: unknown, formData: FormData
     },
   })
 
-  // Route to the right approvers
-  const approverRoles = approverRoleFor(recommenderRole)
-  let approvers = await findApproversForTeam(data.teamId, approverRoles)
-  // Fall back to admins if no qualified approver exists yet
-  if (approvers.length === 0) approvers = await findAdmins()
+  // Route: prefer the recommender's direct supervisor; fall back to any qualified
+  // approver on the team; final fallback is admins.
+  const supervisor = await getDirectSupervisor(session.userId)
+  let approvers: { userId: string; email: string; name: string }[] = []
+  if (supervisor) {
+    approvers = [supervisor]
+  } else {
+    const approverRoles = approverRoleFor(recommenderRole)
+    approvers = await findApproversForTeam(data.teamId, approverRoles)
+    if (approvers.length === 0) approvers = await findAdmins()
+  }
 
   await notifyAll(
     approvers.map((a) => ({ userId: a.userId, email: a.email })),
@@ -181,9 +187,15 @@ export async function createSalaryHikeRequest(_state: unknown, formData: FormDat
     },
   })
 
-  const approverRoles = approverRoleFor(recommenderRole)
-  let approvers = await findApproversForTeam(data.teamId, approverRoles)
-  if (approvers.length === 0) approvers = await findAdmins()
+  const supervisor = await getDirectSupervisor(session.userId)
+  let approvers: { userId: string; email: string; name: string }[] = []
+  if (supervisor) {
+    approvers = [supervisor]
+  } else {
+    const approverRoles = approverRoleFor(recommenderRole)
+    approvers = await findApproversForTeam(data.teamId, approverRoles)
+    if (approvers.length === 0) approvers = await findAdmins()
+  }
 
   const pct = Math.round(((data.proposedSalary - data.currentSalary) / data.currentSalary) * 100)
 
@@ -224,19 +236,22 @@ async function canReviewRequest(opts: {
   recommenderId: string
 }): Promise<boolean> {
   if (opts.reviewerRole === 'ADMIN') return true
-  // Reviewer must have TeamAccess to the team
+
+  // Direct supervisor of the recommender can always review.
+  const supervisor = await getDirectSupervisor(opts.recommenderId)
+  if (supervisor && supervisor.userId === opts.reviewerId) return true
+
+  // Otherwise fall back to role-on-team check.
   const access = await prisma.teamAccess.findUnique({
     where: { userId_teamId: { userId: opts.reviewerId, teamId: opts.requestTeamId } },
   })
   if (!access) return false
 
-  // Find the recommender's role on the same team
   const recAccess = await prisma.teamAccess.findUnique({
     where: { userId_teamId: { userId: opts.recommenderId, teamId: opts.requestTeamId } },
   })
   if (!recAccess) return false
 
-  // Reviewer's role must be in the approver pool for the recommender's role
   const acceptable = approverRoleFor(recAccess.role)
   return acceptable.includes(access.role)
 }
