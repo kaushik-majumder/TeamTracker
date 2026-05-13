@@ -13,7 +13,7 @@ const CreatePersonSchema = z.object({
   // Common
   name: z.string().min(1, { error: 'Name is required' }),
   email: z.email({ error: 'Invalid email' }),
-  role: z.enum(['MANAGER', 'TEAM_LEAD', 'TEAM_MEMBER']),
+  role: z.enum(['MANAGING_DIRECTOR', 'MANAGER', 'TEAM_LEAD', 'TEAM_MEMBER']),
 
   // Manager/Lead only
   password: z.string().optional(),
@@ -28,7 +28,7 @@ const CreatePersonSchema = z.object({
   newTeamName: z.string().optional(),
   newTeamDescription: z.string().optional(),
 }).superRefine((val, ctx) => {
-  if (val.role === 'MANAGER' || val.role === 'TEAM_LEAD') {
+  if (val.role !== 'TEAM_MEMBER') {
     if (!val.password || val.password.length < 6) {
       ctx.addIssue({ code: 'custom', path: ['password'], message: 'Password must be at least 6 characters' })
     }
@@ -154,7 +154,7 @@ export async function deleteTeam(teamId: string) {
 const AssignAccessSchema = z.object({
   teamId: z.string().min(1),
   userId: z.string().min(1),
-  role: z.enum(['MANAGER', 'TEAM_LEAD']),
+  role: z.enum(['MANAGING_DIRECTOR', 'MANAGER', 'TEAM_LEAD']),
 })
 
 export async function assignUserToTeam(_state: unknown, formData: FormData) {

@@ -18,7 +18,7 @@ const DESIGNATION_SUGGESTIONS = [
 
 export function CreateUserForm({ teams }: Props) {
   const [state, action, pending] = useActionState(createUser, undefined)
-  const [role, setRole] = useState<'MANAGER' | 'TEAM_LEAD' | 'TEAM_MEMBER'>('MANAGER')
+  const [role, setRole] = useState<'MANAGING_DIRECTOR' | 'MANAGER' | 'TEAM_LEAD' | 'TEAM_MEMBER'>('MANAGER')
   const [teamMode, setTeamMode] = useState<'none' | 'existing' | 'new'>('none')
   const s = state as { errors?: Record<string, string[]>; message?: string; success?: boolean } | undefined
 
@@ -60,6 +60,7 @@ export function CreateUserForm({ teams }: Props) {
           onChange={(e) => setRole(e.target.value as typeof role)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
+          <option value="MANAGING_DIRECTOR">Managing Director</option>
           <option value="MANAGER">Manager</option>
           <option value="TEAM_LEAD">Team Lead</option>
           <option value="TEAM_MEMBER">Team Member</option>

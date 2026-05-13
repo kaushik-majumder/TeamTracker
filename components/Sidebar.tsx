@@ -30,6 +30,7 @@ export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications 
 
   const roleBadge = {
     ADMIN: { label: 'Admin', cls: 'bg-purple-700 text-purple-100' },
+    MANAGING_DIRECTOR: { label: 'Managing Director', cls: 'bg-indigo-700 text-indigo-100' },
     MANAGER: { label: 'Manager', cls: 'bg-blue-700 text-blue-100' },
     TEAM_LEAD: { label: 'Team Lead', cls: 'bg-gray-700 text-gray-100' },
   }[role]

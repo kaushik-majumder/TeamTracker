@@ -18,6 +18,7 @@ export default async function AdminUsersPage() {
 
   const roleStyles = {
     ADMIN: 'bg-purple-100 text-purple-700',
+    MANAGING_DIRECTOR: 'bg-indigo-100 text-indigo-700',
     MANAGER: 'bg-blue-100 text-blue-700',
     TEAM_LEAD: 'bg-gray-100 text-gray-700',
     TEAM_MEMBER: 'bg-emerald-100 text-emerald-700',
@@ -25,6 +26,7 @@ export default async function AdminUsersPage() {
 
   const roleLabel = {
     ADMIN: 'Admin',
+    MANAGING_DIRECTOR: 'Managing Director',
     MANAGER: 'Manager',
     TEAM_LEAD: 'Team Lead',
     TEAM_MEMBER: 'Team Member',

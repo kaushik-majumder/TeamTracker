@@ -3,7 +3,10 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { format, differenceInYears, isSameMonth } from 'date-fns'
-import { UserPlus, Star, TrendingUp, DollarSign } from 'lucide-react'
+import { UserPlus, Star } from 'lucide-react'
+import { LeadershipWorkflowButtons } from './LeadershipWorkflowButtons'
+import { levelOf } from '@/lib/hierarchy'
+import { Role } from '@prisma/client'
 
 export default async function TeamDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -26,6 +29,22 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
   if (!team) notFound()
 
   const today = new Date()
+  // The viewer's role on THIS team (admin treated as top of chain)
+  const myAccess = team.teamAccess.find((a) => a.userId === session.userId)
+  const viewerTeamRole: Role | null = isAdmin ? 'ADMIN' : myAccess?.role ?? null
+
+  const roleLabel: Record<Role, string> = {
+    ADMIN: 'Admin',
+    MANAGING_DIRECTOR: 'Managing Director',
+    MANAGER: 'Manager',
+    TEAM_LEAD: 'Team Lead',
+  }
+  const roleBadgeColor: Record<Role, string> = {
+    ADMIN: 'bg-purple-100 text-purple-700',
+    MANAGING_DIRECTOR: 'bg-indigo-100 text-indigo-700',
+    MANAGER: 'bg-blue-100 text-blue-700',
+    TEAM_LEAD: 'bg-gray-100 text-gray-700',
+  }
 
   return (
     <div>
@@ -48,22 +67,41 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
-      {/* Team access section (manager + admin) */}
-      {(session.role === 'MANAGER' || isAdmin) && (
+      {/* Leadership / Team Access — visible to anyone on the team */}
+      {team.teamAccess.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Team Access</h2>
+          <h2 className="font-semibold text-gray-900 mb-3">Leadership</h2>
           <div className="space-y-2">
-            {team.teamAccess.map((access) => (
-              <div key={access.id} className="flex items-center justify-between text-sm">
-                <div>
-                  <span className="font-medium text-gray-800">{access.user.name}</span>
-                  <span className="text-gray-500 ml-2">{access.user.email}</span>
+            {team.teamAccess.map((access) => {
+              // A viewer can raise workflows on someone only if they outrank them on the team.
+              const canRecommend =
+                viewerTeamRole !== null &&
+                access.userId !== session.userId &&
+                levelOf(viewerTeamRole) > levelOf(access.role) &&
+                viewerTeamRole !== 'ADMIN' // admin doesn't recommend, they approve
+
+              return (
+                <div key={access.id} className="flex items-center justify-between gap-3 text-sm">
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-gray-800">{access.user.name}</span>
+                    <span className="text-gray-500 ml-2">{access.user.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${roleBadgeColor[access.role]}`}>
+                      {roleLabel[access.role]}
+                    </span>
+                    {canRecommend && (
+                      <LeadershipWorkflowButtons
+                        subjectUserId={access.userId}
+                        subjectName={access.user.name}
+                        subjectCurrentTitle={roleLabel[access.role]}
+                        teamId={team.id}
+                      />
+                    )}
+                  </div>
                 </div>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                  {access.role === 'MANAGER' ? 'Manager' : 'Team Lead'}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

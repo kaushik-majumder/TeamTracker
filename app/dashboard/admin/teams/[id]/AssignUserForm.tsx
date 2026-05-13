@@ -14,16 +14,19 @@ export function AssignUserForm({ teamId, users }: Props) {
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">User</label>
         <select name="userId" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          {users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name} ({u.role === 'MANAGER' ? 'Manager' : 'Team Lead'})
-            </option>
-          ))}
+          {users.map((u) => {
+            const label =
+              u.role === 'MANAGING_DIRECTOR' ? 'Managing Director' :
+              u.role === 'MANAGER' ? 'Manager' :
+              u.role === 'TEAM_LEAD' ? 'Team Lead' : u.role
+            return <option key={u.id} value={u.id}>{u.name} ({label})</option>
+          })}
         </select>
       </div>
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Role on this Team</label>
         <select name="role" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="MANAGING_DIRECTOR">Managing Director</option>
           <option value="MANAGER">Manager</option>
           <option value="TEAM_LEAD">Team Lead</option>
         </select>
