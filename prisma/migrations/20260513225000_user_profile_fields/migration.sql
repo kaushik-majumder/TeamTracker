@@ -1,0 +1,2 @@
+ALTER TABLE "User" ADD COLUMN "profileImageUrl" TEXT;
+ALTER TABLE "User" ADD COLUMN "gender" TEXT;

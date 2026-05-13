@@ -1,9 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { logout } from '@/actions/auth'
 import { Role } from '@prisma/client'
-import { Users, LayoutDashboard, GitBranch, LogOut, UserPlus, Building2, Shield, Bell, Network } from 'lucide-react'
+import { Users, LayoutDashboard, GitBranch, UserPlus, Building2, Shield, Bell, Network } from 'lucide-react'
 
 type Props = {
   name: string
@@ -82,14 +81,6 @@ export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications 
         )}
       </nav>
 
-      <div className="px-3 py-4 border-t border-gray-700">
-        <form action={logout}>
-          <button type="submit" className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">
-            <LogOut size={16} />
-            Sign out
-          </button>
-        </form>
-      </div>
     </aside>
   )
 }

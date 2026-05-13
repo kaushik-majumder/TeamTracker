@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth'
 import { Sidebar } from '@/components/Sidebar'
+import { TopBar } from '@/components/TopBar'
 import { prisma } from '@/lib/db'
 import { approverRoleFor } from '@/lib/hierarchy'
 import { Role } from '@prisma/client'
@@ -71,9 +72,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  const unreadNotifs = await prisma.notification.count({
-    where: { userId: session.userId, readAt: null },
-  })
+  const [unreadNotifs, userProfile] = await Promise.all([
+    prisma.notification.count({
+      where: { userId: session.userId, readAt: null },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { profileImageUrl: true },
+    }),
+  ])
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -83,8 +90,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
         pendingWorkflows={pendingReviewable}
         unreadNotifications={unreadNotifs}
       />
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <TopBar name={session.name} email={session.email} imageUrl={userProfile?.profileImageUrl} />
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>
+        </div>
       </main>
     </div>
   )

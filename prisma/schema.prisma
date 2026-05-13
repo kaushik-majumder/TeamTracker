@@ -38,6 +38,8 @@ model User {
   password               String?
   passwordSetupToken     String?   @unique
   passwordSetupExpiresAt DateTime?
+  profileImageUrl        String?
+  gender                 String?
   role                   Role
   reportsToId            String?
   createdAt              DateTime  @default(now())
