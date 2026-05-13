@@ -1,0 +1,57 @@
+'use server'
+import { z } from 'zod'
+import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+const EmployeeSchema = z.object({
+  name: z.string().min(1, { error: 'Name is required' }),
+  email: z.email({ error: 'Invalid email' }),
+  title: z.string().min(1, { error: 'Title is required' }),
+  joinDate: z.string().min(1, { error: 'Join date is required' }),
+  teamId: z.string().min(1, { error: 'Team is required' }),
+})
+
+const PerformanceSchema = z.object({
+  employeeId: z.string(),
+  rating: z.coerce.number().int().min(1).max(5),
+  notes: z.string().min(1, { error: 'Notes are required' }),
+  period: z.string().min(1, { error: 'Period is required' }),
+})
+
+export async function addEmployee(_state: unknown, formData: FormData) {
+  const session = await requireAuth()
+  const validated = EmployeeSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    title: formData.get('title'),
+    joinDate: formData.get('joinDate'),
+    teamId: formData.get('teamId'),
+  })
+  if (!validated.success) return { errors: validated.error.flatten().fieldErrors }
+
+  const { joinDate, ...rest } = validated.data
+  const employee = await prisma.employee.create({
+    data: { ...rest, joinDate: new Date(joinDate) },
+  })
+  revalidatePath(`/dashboard/teams/${rest.teamId}`)
+  redirect(`/dashboard/teams/${rest.teamId}/members/${employee.id}`)
+}
+
+export async function addPerformanceRecord(_state: unknown, formData: FormData) {
+  const session = await requireAuth()
+  const validated = PerformanceSchema.safeParse({
+    employeeId: formData.get('employeeId'),
+    rating: formData.get('rating'),
+    notes: formData.get('notes'),
+    period: formData.get('period'),
+  })
+  if (!validated.success) return { errors: validated.error.flatten().fieldErrors }
+
+  const record = await prisma.performanceRecord.create({
+    data: { ...validated.data, createdBy: session.userId },
+  })
+  revalidatePath(`/dashboard/teams`)
+  return { success: true }
+}

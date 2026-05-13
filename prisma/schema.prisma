@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  MANAGER
+  TEAM_LEAD
+}
+
+enum WorkflowStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teamAccess        TeamAccess[]
+  promotionRequests PromotionRequest[]  @relation("RecommendedBy")
+  promotionReviews  PromotionRequest[]  @relation("ReviewedBy")
+  salaryRequests    SalaryHikeRequest[] @relation("SalaryRecommendedBy")
+  salaryReviews     SalaryHikeRequest[] @relation("SalaryReviewedBy")
+  performanceNotes  PerformanceRecord[]
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  teamAccess        TeamAccess[]
+  employees         Employee[]
+  promotionRequests PromotionRequest[]
+  salaryRequests    SalaryHikeRequest[]
+}
+
+model TeamAccess {
+  id     String @id @default(cuid())
+  userId String
+  teamId String
+  role   Role
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+}
+
+model Employee {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  title     String
+  joinDate  DateTime
+  teamId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team               Team                @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  performanceRecords PerformanceRecord[]
+  promotionRequests  PromotionRequest[]
+  salaryRequests     SalaryHikeRequest[]
+  anniversaryEmails  AnniversaryEmail[]
+}
+
+model PerformanceRecord {
+  id         String   @id @default(cuid())
+  employeeId String
+  rating     Int
+  notes      String
+  period     String
+  createdBy  String
+  createdAt  DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  author   User     @relation(fields: [createdBy], references: [id])
+}
+
+model PromotionRequest {
+  id            String         @id @default(cuid())
+  employeeId    String
+  teamId        String
+  recommendedBy String
+  currentTitle  String
+  proposedTitle String
+  justification String
+  status        WorkflowStatus @default(PENDING)
+  reviewedBy    String?
+  reviewNote    String?
+  createdAt     DateTime       @default(now())
+  reviewedAt    DateTime?
+
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  recommender User     @relation("RecommendedBy", fields: [recommendedBy], references: [id])
+  reviewer    User?    @relation("ReviewedBy", fields: [reviewedBy], references: [id])
+}
+
+model SalaryHikeRequest {
+  id             String         @id @default(cuid())
+  employeeId     String
+  teamId         String
+  recommendedBy  String
+  currentSalary  Float
+  proposedSalary Float
+  justification  String
+  status         WorkflowStatus @default(PENDING)
+  reviewedBy     String?
+  reviewNote     String?
+  createdAt      DateTime       @default(now())
+  reviewedAt     DateTime?
+
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  recommender User     @relation("SalaryRecommendedBy", fields: [recommendedBy], references: [id])
+  reviewer    User?    @relation("SalaryReviewedBy", fields: [reviewedBy], references: [id])
+}
+
+model AnniversaryEmail {
+  id         String   @id @default(cuid())
+  employeeId String
+  year       Int
+  sentAt     DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, year])
+}
