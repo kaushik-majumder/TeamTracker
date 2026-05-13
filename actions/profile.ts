@@ -6,15 +6,36 @@ import { validateEmailDomain } from '@/lib/email-validation'
 import { createSession } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 
+// 600KB cap on the stored data URL — leaves headroom for ~450KB of image bytes
+// after base64 encoding. The form resizes uploads to 256×256 JPEG before sending,
+// so a typical avatar is ~20–40KB.
+const MAX_IMAGE_BYTES = 600_000
+
 const ProfileSchema = z.object({
   name: z.string().min(1, { error: 'Name is required' }),
   email: z.email({ error: 'Invalid email' }),
   gender: z.string().optional(),
   profileImageUrl: z.string().optional(),
-}).refine(
-  (v) => !v.profileImageUrl || /^https?:\/\//i.test(v.profileImageUrl),
-  { path: ['profileImageUrl'], error: 'Image URL must start with http:// or https://' }
-)
+}).superRefine((v, ctx) => {
+  if (!v.profileImageUrl) return
+  const url = v.profileImageUrl
+  const isHttp = /^https?:\/\//i.test(url)
+  const isDataImage = /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(url)
+  if (!isHttp && !isDataImage) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['profileImageUrl'],
+      message: 'Unsupported image format',
+    })
+  }
+  if (isDataImage && url.length > MAX_IMAGE_BYTES) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['profileImageUrl'],
+      message: 'Image is too large — try a smaller file',
+    })
+  }
+})
 
 export async function updateProfile(_state: unknown, formData: FormData) {
   const session = await requireAuth()
