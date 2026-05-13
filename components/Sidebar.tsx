@@ -5,16 +5,16 @@ import { logout } from '@/actions/auth'
 import { Role } from '@prisma/client'
 import { Users, LayoutDashboard, GitBranch, LogOut, UserPlus, Building2, Shield } from 'lucide-react'
 
-type Props = { name: string; role: Role }
+type Props = { name: string; role: Role; pendingWorkflows?: number }
 
-export function Sidebar({ name, role }: Props) {
+export function Sidebar({ name, role, pendingWorkflows = 0 }: Props) {
   const pathname = usePathname()
   const isAdmin = role === 'ADMIN'
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-    { href: '/dashboard/teams', label: 'Teams', icon: Users },
-    { href: '/dashboard/workflows', label: 'Workflows', icon: GitBranch },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true, badge: 0 },
+    { href: '/dashboard/teams', label: 'Teams', icon: Users, badge: 0 },
+    { href: '/dashboard/workflows', label: 'Workflows', icon: GitBranch, badge: pendingWorkflows },
   ]
 
   const adminItems = [
@@ -47,10 +47,15 @@ export function Sidebar({ name, role }: Props) {
       </div>
 
       <nav className="flex-1 py-4 px-3 space-y-1">
-        {navItems.map(({ href, label, icon: Icon, exact }) => (
+        {navItems.map(({ href, label, icon: Icon, exact, badge }) => (
           <Link key={href} href={href} className={linkClass(href, exact)}>
             <Icon size={16} />
-            {label}
+            <span className="flex-1">{label}</span>
+            {badge > 0 && (
+              <span className="text-[10px] font-semibold bg-amber-500 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                {badge}
+              </span>
+            )}
           </Link>
         ))}
 

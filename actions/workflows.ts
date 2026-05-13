@@ -1,7 +1,7 @@
 'use server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
-import { requireAuth, requireManagerOrAdmin } from '@/lib/auth'
+import { requireAuth, requireManagerOrAdmin, requireTeamAccess } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { WorkflowStatus } from '@prisma/client'
 
@@ -28,7 +28,6 @@ const ReviewSchema = z.object({
 })
 
 export async function createPromotionRequest(_state: unknown, formData: FormData) {
-  const session = await requireAuth()
   const validated = PromotionSchema.safeParse({
     employeeId: formData.get('employeeId'),
     teamId: formData.get('teamId'),
@@ -36,17 +35,18 @@ export async function createPromotionRequest(_state: unknown, formData: FormData
     proposedTitle: formData.get('proposedTitle'),
     justification: formData.get('justification'),
   })
-  if (!validated.success) return { errors: validated.error.flatten().fieldErrors }
+  if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
+  const session = await requireTeamAccess(validated.data.teamId)
   await prisma.promotionRequest.create({
     data: { ...validated.data, recommendedBy: session.userId },
   })
   revalidatePath('/dashboard/workflows')
+  revalidatePath('/dashboard')
   return { success: true }
 }
 
 export async function createSalaryHikeRequest(_state: unknown, formData: FormData) {
-  const session = await requireAuth()
   const validated = SalaryHikeSchema.safeParse({
     employeeId: formData.get('employeeId'),
     teamId: formData.get('teamId'),
@@ -54,12 +54,14 @@ export async function createSalaryHikeRequest(_state: unknown, formData: FormDat
     proposedSalary: formData.get('proposedSalary'),
     justification: formData.get('justification'),
   })
-  if (!validated.success) return { errors: validated.error.flatten().fieldErrors }
+  if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
+  const session = await requireTeamAccess(validated.data.teamId)
   await prisma.salaryHikeRequest.create({
     data: { ...validated.data, recommendedBy: session.userId },
   })
   revalidatePath('/dashboard/workflows')
+  revalidatePath('/dashboard')
   return { success: true }
 }
 

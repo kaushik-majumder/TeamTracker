@@ -5,14 +5,18 @@ import { ReviewForm } from './ReviewForm'
 
 export default async function WorkflowsPage() {
   const session = await requireAuth()
+  const isAdmin = session.role === 'ADMIN'
 
-  const teamFilter = {
-    teamId: {
-      in: await prisma.teamAccess
-        .findMany({ where: { userId: session.userId }, select: { teamId: true } })
-        .then((rows) => rows.map((r) => r.teamId)),
-    },
-  }
+  // Admins see all workflows; everyone else is filtered by team access.
+  const teamFilter = isAdmin
+    ? {}
+    : {
+        teamId: {
+          in: await prisma.teamAccess
+            .findMany({ where: { userId: session.userId }, select: { teamId: true } })
+            .then((rows) => rows.map((r) => r.teamId)),
+        },
+      }
 
   const [promotions, salaryHikes] = await Promise.all([
     prisma.promotionRequest.findMany({
@@ -37,7 +41,7 @@ export default async function WorkflowsPage() {
     }),
   ])
 
-  const isManager = session.role === 'MANAGER'
+  const canReview = session.role === 'MANAGER' || session.role === 'ADMIN'
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -92,7 +96,7 @@ export default async function WorkflowsPage() {
                   </p>
                 )}
 
-                {isManager && req.status === 'PENDING' && (
+                {canReview && req.status === 'PENDING' && (
                   <ReviewForm requestId={req.id} type="promotion" />
                 )}
               </div>
@@ -145,7 +149,7 @@ export default async function WorkflowsPage() {
                   </p>
                 )}
 
-                {isManager && req.status === 'PENDING' && (
+                {canReview && req.status === 'PENDING' && (
                   <ReviewForm requestId={req.id} type="salary" />
                 )}
               </div>
