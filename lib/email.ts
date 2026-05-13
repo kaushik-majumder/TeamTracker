@@ -83,6 +83,29 @@ export function workflowSubmittedEmail(opts: {
   }
 }
 
+export function inviteEmail(opts: {
+  recipientName: string
+  inviterName?: string
+  setupUrl: string
+}) {
+  return {
+    subject: 'Welcome to TeamTracker — set your password',
+    html: `
+      <div style="${baseStyle}">
+        <h2 style="margin-top:0;">Welcome to TeamTracker</h2>
+        <p>Hi ${opts.recipientName},</p>
+        <p>${opts.inviterName ?? 'An admin'} has created an account for you. Click the button below to set your password and sign in.</p>
+        <p style="margin: 24px 0;">
+          <a href="${opts.setupUrl}" style="display:inline-block; padding:12px 24px; background:#2563eb; color:white; text-decoration:none; border-radius:8px; font-weight:500;">Set your password</a>
+        </p>
+        <p style="color:#6b7280; font-size:13px;">Or copy this link into your browser:<br/><span style="color:#2563eb;">${opts.setupUrl}</span></p>
+        <p style="color:#9ca3af; font-size:12px; margin-top:24px;">This link expires in 7 days. If you didn't expect this email, you can ignore it.</p>
+        <p style="color:#9ca3af; font-size:12px; margin-top:32px;">— TeamTracker</p>
+      </div>
+    `,
+  }
+}
+
 export function workflowReviewedEmail(opts: {
   recipientName: string
   reviewerName: string

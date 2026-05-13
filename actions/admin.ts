@@ -1,12 +1,19 @@
 'use server'
 import { z } from 'zod'
-import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { propagateAccessUpChain } from '@/lib/hierarchy'
 import { validateEmailDomain } from '@/lib/email-validation'
+import { sendEmail, inviteEmail } from '@/lib/email'
 import { revalidatePath } from 'next/cache'
 import { Role } from '@prisma/client'
+
+const APP_URL = process.env.APP_URL || 'http://localhost:3000'
+
+function generateToken() {
+  return crypto.randomBytes(32).toString('hex')
+}
 
 // ─── Create User OR Team Member ─────────────────────────────────────────────
 
@@ -16,9 +23,6 @@ const CreatePersonSchema = z.object({
   email: z.email({ error: 'Invalid email' }),
   role: z.enum(['MANAGING_DIRECTOR', 'MANAGER', 'TEAM_LEAD', 'TEAM_MEMBER']),
 
-  // Manager/Lead/MD only
-  password: z.string().optional(),
-
   // Team member only
   designation: z.string().optional(),
   joinDate: z.string().optional(),
@@ -27,17 +31,12 @@ const CreatePersonSchema = z.object({
   // Single-team flow (used by TEAM_MEMBER, TEAM_LEAD):
   teamMode: z.enum(['none', 'existing', 'new']).default('none'),
   existingTeamId: z.string().optional(),
-  // Multi-team flow (used by MANAGER, MANAGING_DIRECTOR):
+  // Multi-team flow (used by MANAGER):
   selectedTeamIds: z.array(z.string()).default([]),
   // New team optionally created alongside either flow:
   newTeamName: z.string().optional(),
   newTeamDescription: z.string().optional(),
 }).superRefine((val, ctx) => {
-  if (val.role !== 'TEAM_MEMBER') {
-    if (!val.password || val.password.length < 6) {
-      ctx.addIssue({ code: 'custom', path: ['password'], message: 'Password must be at least 6 characters' })
-    }
-  }
   if (val.role === 'TEAM_MEMBER') {
     if (!val.designation) {
       ctx.addIssue({ code: 'custom', path: ['designation'], message: 'Designation is required' })
@@ -58,12 +57,11 @@ const CreatePersonSchema = z.object({
 })
 
 export async function createUser(_state: unknown, formData: FormData) {
-  await requireAdmin()
+  const adminSession = await requireAdmin()
   const validated = CreatePersonSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
     role: formData.get('role'),
-    password: formData.get('password') || undefined,
     designation: formData.get('designation') || undefined,
     joinDate: formData.get('joinDate') || undefined,
     teamMode: formData.get('teamMode') ?? 'none',
@@ -75,12 +73,9 @@ export async function createUser(_state: unknown, formData: FormData) {
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
   const data = validated.data
-  const isMultiTeamRole = data.role === 'MANAGER' || data.role === 'MANAGING_DIRECTOR'
-
-  // For managers/MDs, require at least one team via multi-select or new team
-  if (isMultiTeamRole && data.selectedTeamIds.length === 0 && !data.newTeamName) {
-    // Not strictly required — they can be created and assigned later, so we just allow it.
-  }
+  // MD doesn't need direct team assignment — they gain access automatically
+  // when managers are set to report to them.
+  const isManagerWithDirectTeams = data.role === 'MANAGER'
 
   // Verify the email domain has working mail servers
   const domainError = await validateEmailDomain(data.email)
@@ -92,11 +87,14 @@ export async function createUser(_state: unknown, formData: FormData) {
     if (existing) return { message: 'A user with that email already exists' }
   }
 
+  // Setup token for login-capable users
+  const setupToken = data.role !== 'TEAM_MEMBER' ? generateToken() : null
+  const setupExpiresAt = setupToken ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null
+
   const newUserId = await prisma.$transaction(async (tx) => {
-    // Resolve target team(s)
     const teamIds: string[] = []
 
-    if (isMultiTeamRole) {
+    if (isManagerWithDirectTeams) {
       teamIds.push(...data.selectedTeamIds)
       if (data.newTeamName) {
         const team = await tx.team.create({
@@ -104,7 +102,8 @@ export async function createUser(_state: unknown, formData: FormData) {
         })
         teamIds.push(team.id)
       }
-    } else {
+    } else if (data.role !== 'MANAGING_DIRECTOR') {
+      // TEAM_LEAD or TEAM_MEMBER — single-team flow
       if (data.teamMode === 'existing' && data.existingTeamId) {
         teamIds.push(data.existingTeamId)
       } else if (data.teamMode === 'new' && data.newTeamName) {
@@ -114,6 +113,7 @@ export async function createUser(_state: unknown, formData: FormData) {
         teamIds.push(team.id)
       }
     }
+    // MD: no teams assigned directly — propagation handles it later
 
     if (data.role === 'TEAM_MEMBER') {
       await tx.employee.create({
@@ -127,9 +127,15 @@ export async function createUser(_state: unknown, formData: FormData) {
       })
       return null
     } else {
-      const hashed = await bcrypt.hash(data.password!, 12)
       const user = await tx.user.create({
-        data: { name: data.name, email: data.email, password: hashed, role: data.role as Role },
+        data: {
+          name: data.name,
+          email: data.email,
+          password: null,
+          passwordSetupToken: setupToken,
+          passwordSetupExpiresAt: setupExpiresAt,
+          role: data.role as Role,
+        },
       })
       for (const teamId of teamIds) {
         await tx.teamAccess.create({
@@ -140,9 +146,22 @@ export async function createUser(_state: unknown, formData: FormData) {
     }
   })
 
-  // If we created a User with team access, cascade access up their (currently empty)
-  // supervisor chain. Safe no-op when reportsTo is unset.
-  if (newUserId) await propagateAccessUpChain(newUserId)
+  if (newUserId) {
+    await propagateAccessUpChain(newUserId)
+
+    // Send invite email
+    if (setupToken) {
+      const setupUrl = `${APP_URL}/setup-password?token=${setupToken}`
+      await sendEmail({
+        to: data.email,
+        ...inviteEmail({
+          recipientName: data.name,
+          inviterName: adminSession.name,
+          setupUrl,
+        }),
+      })
+    }
+  }
 
   revalidatePath('/dashboard/admin/users')
   revalidatePath('/dashboard/admin/teams')
