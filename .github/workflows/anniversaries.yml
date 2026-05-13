@@ -1,0 +1,38 @@
+name: Daily Anniversary Emails
+
+# Hits the production anniversary endpoint once a day. The route itself is
+# idempotent — it skips employees whose AnniversaryEmail row for the current
+# year already exists, so re-runs are safe.
+
+on:
+  schedule:
+    # 09:00 UTC daily. Adjust to match your team's timezone if you want a
+    # different local time. https://crontab.guru/
+    - cron: '0 9 * * *'
+
+  # Allow running it manually from the Actions tab as well
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/anniversaries
+        run: |
+          set -euo pipefail
+
+          response=$(curl -sS -w "\nHTTP_STATUS:%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/anniversaries")
+
+          body=$(echo "$response" | sed -e '$d')
+          status=$(echo "$response" | tail -n1 | sed 's/HTTP_STATUS://')
+
+          echo "Response body:"
+          echo "$body"
+          echo "HTTP status: $status"
+
+          if [ "$status" != "200" ]; then
+            echo "::error::Anniversary cron returned non-200 status"
+            exit 1
+          fi

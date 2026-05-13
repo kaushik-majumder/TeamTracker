@@ -33,16 +33,27 @@ function getTransporter() {
   return transporter
 }
 
-export async function sendEmail(opts: { to: string; subject: string; html: string }) {
+export async function sendEmail(opts: {
+  to: string
+  subject: string
+  html: string
+  cc?: string[]
+  bcc?: string[]
+}) {
   const t = getTransporter()
   if (!t) {
-    console.warn(`[email] SMTP not configured — would have sent to ${opts.to}: ${opts.subject}`)
+    const cc = opts.cc && opts.cc.length ? ` (cc: ${opts.cc.join(', ')})` : ''
+    console.warn(`[email] SMTP not configured — would have sent to ${opts.to}${cc}: ${opts.subject}`)
     return { sent: false, reason: 'smtp-not-configured' as const }
   }
   try {
     await t.sendMail({
       from: process.env.EMAIL_FROM ?? 'TeamTracker <noreply@teamtracker.dev>',
-      ...opts,
+      to: opts.to,
+      cc: opts.cc?.length ? opts.cc : undefined,
+      bcc: opts.bcc?.length ? opts.bcc : undefined,
+      subject: opts.subject,
+      html: opts.html,
     })
     return { sent: true as const }
   } catch (err) {

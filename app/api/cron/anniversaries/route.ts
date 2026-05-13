@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db'
+import { sendEmail } from '@/lib/email'
 import { NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization')
@@ -13,23 +13,18 @@ export async function GET(request: Request) {
   const day = today.getDate()
   const year = today.getFullYear()
 
+  // Active employees whose joinDate has the same month + day as today (and joined in a prior year)
   const employees = await prisma.employee.findMany({
     where: { status: 'ACTIVE' },
-    select: { id: true, name: true, email: true, joinDate: true },
+    select: { id: true, name: true, email: true, joinDate: true, teamId: true, team: { select: { name: true } } },
   })
 
-  const anniversaries = employees.filter((emp) => {
-    const join = new Date(emp.joinDate)
-    return join.getMonth() + 1 === month && join.getDate() === day && join.getFullYear() < year
+  const anniversaries = employees.filter((e) => {
+    const j = new Date(e.joinDate)
+    return j.getMonth() + 1 === month && j.getDate() === day && j.getFullYear() < year
   })
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT ?? 587),
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-  })
-
-  const results: { name: string; status: string }[] = []
+  const results: { name: string; status: string; cc?: string[] }[] = []
 
   for (const emp of anniversaries) {
     const alreadySent = await prisma.anniversaryEmail.findUnique({
@@ -39,27 +34,45 @@ export async function GET(request: Request) {
 
     const yearsAtCompany = year - new Date(emp.joinDate).getFullYear()
 
+    // Pull the team's leadership chain — leads, managers, and MDs all get CC'd
+    const teamAccess = await prisma.teamAccess.findMany({
+      where: { teamId: emp.teamId },
+      include: { user: { select: { email: true } } },
+    })
+    const cc = [...new Set(teamAccess.map((a) => a.user.email))]
+
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_FROM ?? 'teamtracker@company.com',
+      const res = await sendEmail({
         to: emp.email,
+        cc,
         subject: `Happy ${yearsAtCompany}-Year Work Anniversary, ${emp.name}!`,
         html: `
-          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;">
-            <h2>🎉 Happy Work Anniversary, ${emp.name}!</h2>
-            <p>Today marks your <strong>${yearsAtCompany}-year</strong> anniversary with us.
-            Thank you for everything you bring to the team — your dedication and hard work are truly valued.</p>
+          <div style="font-family:-apple-system,system-ui,sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#1f2937;">
+            <h2 style="margin-top:0;">🎉 Happy Work Anniversary, ${emp.name}!</h2>
+            <p>Today marks your <strong>${yearsAtCompany}-year</strong> anniversary with us on the <strong>${emp.team.name}</strong> team.</p>
+            <p>Thank you for everything you bring — your dedication and hard work are truly appreciated.</p>
             <p>Here's to many more great years ahead!</p>
-            <p style="color:#888;font-size:12px;margin-top:32px;">— TeamTracker</p>
+            <p style="color:#9ca3af;font-size:12px;margin-top:32px;">— TeamTracker</p>
           </div>
         `,
       })
 
-      await prisma.anniversaryEmail.create({
-        data: { employeeId: emp.id, year },
+      if (res.sent !== false || res.reason === 'smtp-not-configured') {
+        // We record the row even in 'smtp-not-configured' mode so we don't replay
+        // every day during local dev. To force a re-send while debugging, clear
+        // the AnniversaryEmail row manually.
+        await prisma.anniversaryEmail.create({
+          data: { employeeId: emp.id, year },
+        })
+      }
+
+      results.push({
+        name: emp.name,
+        status: res.sent === false ? `skipped (${res.reason})` : 'sent',
+        cc,
       })
-      results.push({ name: emp.name, status: 'sent' })
     } catch (err) {
+      console.error(`[cron] failed for ${emp.name}:`, err)
       results.push({ name: emp.name, status: 'failed' })
     }
   }
