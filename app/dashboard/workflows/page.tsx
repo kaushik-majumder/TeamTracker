@@ -51,7 +51,11 @@ export default async function WorkflowsPage() {
 
   // Helper: can the viewer review THIS specific request?
   const recommenderIds = [
-    ...new Set([...promotions, ...salaryHikes].map((r) => r.recommendedBy)),
+    ...new Set(
+      [...promotions, ...salaryHikes]
+        .map((r) => r.recommendedBy)
+        .filter((id): id is string => id !== null)
+    ),
   ]
   const [recommenderAccess, recommenderSupervisors] = await Promise.all([
     prisma.teamAccess.findMany({
@@ -67,11 +71,10 @@ export default async function WorkflowsPage() {
   const recRoleMap = new Map(recommenderAccess.map((r) => [recRoleKey(r.userId, r.teamId), r.role]))
   const supervisorByRecommender = new Map(recommenderSupervisors.map((u) => [u.id, u.reportsToId]))
 
-  function canReviewThis(opts: { recommenderId: string; teamId: string }): boolean {
+  function canReviewThis(opts: { recommenderId: string | null; teamId: string }): boolean {
     if (isAdmin) return true
-    // Direct supervisor of the recommender can review.
+    if (!opts.recommenderId) return false
     if (supervisorByRecommender.get(opts.recommenderId) === session.userId) return true
-    // Otherwise fall back to role-on-team check.
     const viewerRole = myTeamRole.get(opts.teamId)
     if (!viewerRole) return false
     const recRole = recRoleMap.get(recRoleKey(opts.recommenderId, opts.teamId)) as Role | undefined
@@ -128,7 +131,7 @@ export default async function WorkflowsPage() {
                         {req.currentTitle} → <strong>{req.proposedTitle}</strong>
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Recommended by {isMine ? 'you' : req.recommender.name} · {format(req.createdAt, 'MMM d, yyyy')}
+                        Recommended by {isMine ? 'you' : req.recommender?.name ?? 'Former user'} · {format(req.createdAt, 'MMM d, yyyy')}
                       </p>
                       <p className="text-sm text-gray-600 mt-2 italic">&quot;{req.justification}&quot;</p>
                     </div>
@@ -196,7 +199,7 @@ export default async function WorkflowsPage() {
                         <span className="text-gray-400 ml-1 text-xs">(+{pct}%)</span>
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Recommended by {isMine ? 'you' : req.recommender.name} · {format(req.createdAt, 'MMM d, yyyy')}
+                        Recommended by {isMine ? 'you' : req.recommender?.name ?? 'Former user'} · {format(req.createdAt, 'MMM d, yyyy')}
                       </p>
                       <p className="text-sm text-gray-600 mt-2 italic">&quot;{req.justification}&quot;</p>
                     </div>

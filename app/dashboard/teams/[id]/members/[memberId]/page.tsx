@@ -117,7 +117,7 @@ export default async function MemberDetailPage({
                   </div>
                   <p className="text-sm text-gray-600">{rec.notes}</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    by {rec.author.name} · {format(rec.createdAt, 'MMM d, yyyy')}
+                    by {rec.author?.name ?? 'Former user'} · {format(rec.createdAt, 'MMM d, yyyy')}
                   </p>
                 </div>
               ))}

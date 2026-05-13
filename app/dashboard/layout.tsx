@@ -39,7 +39,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ])
     const all = [...promos, ...salaries]
     if (all.length > 0) {
-      const recIds = [...new Set(all.map((r) => r.recommendedBy))]
+      const recIds = [
+        ...new Set(
+          all
+            .map((r) => r.recommendedBy)
+            .filter((id): id is string => id !== null)
+        ),
+      ]
       const [recAccess, recSupervisors] = await Promise.all([
         prisma.teamAccess.findMany({
           where: { userId: { in: recIds } },
@@ -55,6 +61,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       const supervisorOf = new Map(recSupervisors.map((u) => [u.id, u.reportsToId]))
 
       pendingReviewable = all.filter((r) => {
+        if (!r.recommendedBy) return false
         if (supervisorOf.get(r.recommendedBy) === session.userId) return true
         const viewerRole = viewerRoleByTeam.get(r.teamId) as Role | undefined
         const recRole = recRoleMap.get(recKey(r.recommendedBy, r.teamId)) as Role | undefined

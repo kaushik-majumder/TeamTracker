@@ -233,9 +233,11 @@ async function canReviewRequest(opts: {
   reviewerId: string
   reviewerRole: Role
   requestTeamId: string
-  recommenderId: string
+  recommenderId: string | null
 }): Promise<boolean> {
   if (opts.reviewerRole === 'ADMIN') return true
+  // If the recommender was deleted, only admins can clean up
+  if (!opts.recommenderId) return false
 
   // Direct supervisor of the recommender can always review.
   const supervisor = await getDirectSupervisor(opts.recommenderId)
@@ -298,26 +300,29 @@ export async function reviewPromotionRequest(_state: unknown, formData: FormData
 
   const subjectName = updated.employee?.name ?? updated.subjectUser?.name ?? 'team member'
 
-  await notify({
-    userId: updated.recommendedBy,
-    type: 'PROMOTION_REVIEWED',
-    title: `Promotion ${status.toLowerCase()}`,
-    message: `${session.name} ${status.toLowerCase()} your promotion request for ${subjectName}`,
-    link: '/dashboard/workflows',
-    email: {
-      to: updated.recommender.email,
-      ...workflowReviewedEmail({
-        recipientName: updated.recommender.name,
-        reviewerName: session.name,
-        employeeName: subjectName,
-        workflowType: 'Promotion',
-        decision: status as 'APPROVED' | 'REJECTED',
-        detail: `${updated.currentTitle} → ${updated.proposedTitle}`,
-        reviewNote,
-        appUrl: APP_URL,
-      }),
-    },
-  })
+  // Skip notify when the original recommender has since been deleted.
+  if (updated.recommendedBy && updated.recommender) {
+    await notify({
+      userId: updated.recommendedBy,
+      type: 'PROMOTION_REVIEWED',
+      title: `Promotion ${status.toLowerCase()}`,
+      message: `${session.name} ${status.toLowerCase()} your promotion request for ${subjectName}`,
+      link: '/dashboard/workflows',
+      email: {
+        to: updated.recommender.email,
+        ...workflowReviewedEmail({
+          recipientName: updated.recommender.name,
+          reviewerName: session.name,
+          employeeName: subjectName,
+          workflowType: 'Promotion',
+          decision: status as 'APPROVED' | 'REJECTED',
+          detail: `${updated.currentTitle} → ${updated.proposedTitle}`,
+          reviewNote,
+          appUrl: APP_URL,
+        }),
+      },
+    })
+  }
 
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')
@@ -367,26 +372,28 @@ export async function reviewSalaryHikeRequest(_state: unknown, formData: FormDat
   const subjectName = updated.employee?.name ?? updated.subjectUser?.name ?? 'team member'
   const pct = Math.round(((updated.proposedSalary - updated.currentSalary) / updated.currentSalary) * 100)
 
-  await notify({
-    userId: updated.recommendedBy,
-    type: 'SALARY_REVIEWED',
-    title: `Salary hike ${status.toLowerCase()}`,
-    message: `${session.name} ${status.toLowerCase()} your salary hike request for ${subjectName}`,
-    link: '/dashboard/workflows',
-    email: {
-      to: updated.recommender.email,
-      ...workflowReviewedEmail({
-        recipientName: updated.recommender.name,
-        reviewerName: session.name,
-        employeeName: subjectName,
-        workflowType: 'Salary Hike',
-        decision: status as 'APPROVED' | 'REJECTED',
-        detail: `$${updated.currentSalary.toLocaleString()} → $${updated.proposedSalary.toLocaleString()} (+${pct}%)`,
-        reviewNote,
-        appUrl: APP_URL,
-      }),
-    },
-  })
+  if (updated.recommendedBy && updated.recommender) {
+    await notify({
+      userId: updated.recommendedBy,
+      type: 'SALARY_REVIEWED',
+      title: `Salary hike ${status.toLowerCase()}`,
+      message: `${session.name} ${status.toLowerCase()} your salary hike request for ${subjectName}`,
+      link: '/dashboard/workflows',
+      email: {
+        to: updated.recommender.email,
+        ...workflowReviewedEmail({
+          recipientName: updated.recommender.name,
+          reviewerName: session.name,
+          employeeName: subjectName,
+          workflowType: 'Salary Hike',
+          decision: status as 'APPROVED' | 'REJECTED',
+          detail: `$${updated.currentSalary.toLocaleString()} → $${updated.proposedSalary.toLocaleString()} (+${pct}%)`,
+          reviewNote,
+          appUrl: APP_URL,
+        }),
+      },
+    })
+  }
 
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')
