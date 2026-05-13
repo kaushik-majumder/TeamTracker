@@ -15,9 +15,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         })
       ).map((r) => r.teamId)
 
-  const [pendingPromos, pendingSalary] = await Promise.all([
+  const [pendingPromos, pendingSalary, unreadNotifs] = await Promise.all([
     prisma.promotionRequest.count({ where: { teamId: { in: teamIds }, status: 'PENDING' } }),
     prisma.salaryHikeRequest.count({ where: { teamId: { in: teamIds }, status: 'PENDING' } }),
+    prisma.notification.count({ where: { userId: session.userId, readAt: null } }),
   ])
 
   return (
@@ -26,6 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         name={session.name}
         role={session.role}
         pendingWorkflows={pendingPromos + pendingSalary}
+        unreadNotifications={unreadNotifs}
       />
       <main className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>

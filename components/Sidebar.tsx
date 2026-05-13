@@ -3,11 +3,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { logout } from '@/actions/auth'
 import { Role } from '@prisma/client'
-import { Users, LayoutDashboard, GitBranch, LogOut, UserPlus, Building2, Shield } from 'lucide-react'
+import { Users, LayoutDashboard, GitBranch, LogOut, UserPlus, Building2, Shield, Bell } from 'lucide-react'
 
-type Props = { name: string; role: Role; pendingWorkflows?: number }
+type Props = {
+  name: string
+  role: Role
+  pendingWorkflows?: number
+  unreadNotifications?: number
+}
 
-export function Sidebar({ name, role, pendingWorkflows = 0 }: Props) {
+export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications = 0 }: Props) {
   const pathname = usePathname()
   const isAdmin = role === 'ADMIN'
 
@@ -15,6 +20,7 @@ export function Sidebar({ name, role, pendingWorkflows = 0 }: Props) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true, badge: 0 },
     { href: '/dashboard/teams', label: 'Teams', icon: Users, badge: 0 },
     { href: '/dashboard/workflows', label: 'Workflows', icon: GitBranch, badge: pendingWorkflows },
+    { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: unreadNotifications },
   ]
 
   const adminItems = [

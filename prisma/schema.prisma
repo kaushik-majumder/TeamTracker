@@ -23,6 +23,13 @@ enum EmployeeStatus {
   LEFT
 }
 
+enum NotificationType {
+  PROMOTION_SUBMITTED
+  PROMOTION_REVIEWED
+  SALARY_SUBMITTED
+  SALARY_REVIEWED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -38,6 +45,7 @@ model User {
   salaryRequests    SalaryHikeRequest[] @relation("SalaryRecommendedBy")
   salaryReviews     SalaryHikeRequest[] @relation("SalaryReviewedBy")
   performanceNotes  PerformanceRecord[]
+  notifications     Notification[]
 }
 
 model Team {
@@ -135,6 +143,21 @@ model SalaryHikeRequest {
   team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   recommender User     @relation("SalaryRecommendedBy", fields: [recommendedBy], references: [id])
   reviewer    User?    @relation("SalaryReviewedBy", fields: [reviewedBy], references: [id])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
 }
 
 model AnniversaryEmail {
