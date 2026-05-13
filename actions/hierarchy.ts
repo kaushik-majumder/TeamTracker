@@ -69,3 +69,31 @@ export async function setReportsTo(_state: unknown, formData: FormData) {
   revalidatePath('/dashboard/teams')
   return { success: true }
 }
+
+/**
+ * Re-runs propagation for every user in the system. Useful after the feature
+ * was first introduced, or to repair access if direct DB edits bypassed the
+ * automatic cascade.
+ */
+export async function resyncHierarchyAccess() {
+  await requireAdmin()
+
+  const users = await prisma.user.findMany({
+    where: { role: { not: 'ADMIN' } },
+    select: { id: true },
+  })
+
+  let granted = 0
+  for (const u of users) {
+    // Count rows before vs after as a rough "what changed" signal
+    const before = await prisma.teamAccess.count()
+    await propagateAccessUpChain(u.id)
+    const after = await prisma.teamAccess.count()
+    granted += after - before
+  }
+
+  revalidatePath('/dashboard/admin/hierarchy')
+  revalidatePath('/dashboard/admin/teams')
+  revalidatePath('/dashboard/teams')
+  return { success: true, granted }
+}

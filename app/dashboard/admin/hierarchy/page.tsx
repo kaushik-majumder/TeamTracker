@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import { levelOf } from '@/lib/hierarchy'
 import { ReportsToSelect } from './ReportsToSelect'
+import { SyncAccessButton } from './SyncAccessButton'
 import { Role } from '@prisma/client'
 
 export default async function HierarchyPage() {
@@ -34,15 +35,22 @@ export default async function HierarchyPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Reporting Hierarchy</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Set each user&apos;s direct supervisor. Workflow requests are routed up this chain first.
-        </p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Reporting Hierarchy</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Set each user&apos;s direct supervisor. Workflow requests are routed up this chain first.
+            </p>
+          </div>
+          <SyncAccessButton />
+        </div>
         <div className="mt-3 bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-900">
           <strong>Auto-propagation:</strong> when you set a supervisor, that person (and anyone
           above them) automatically gains access to every team this user has access to.
           Existing team roles are preserved — new access is granted at the supervisor&apos;s own
-          rank. The same cascade kicks in whenever you add someone to a team.
+          rank. The same cascade kicks in whenever you add someone to a team. If you set up
+          reporting lines before this feature existed, click <em>Sync access from hierarchy</em>
+          to backfill the access for everyone in one go.
         </div>
       </div>
 
