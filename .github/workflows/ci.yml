@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+
+    # Dummy env vars so prisma client init / session module don't blow up
+    # at import time. Tests mock the DB, so no real connection is needed.
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      DIRECT_URL: postgresql://test:test@localhost:5432/test
+      SESSION_SECRET: ci-only-secret-do-not-use-in-prod-1234567890abcdef
+      CRON_SECRET: ci-only-cron-secret
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build

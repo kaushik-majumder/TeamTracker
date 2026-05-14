@@ -2,6 +2,7 @@
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
+import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
 const ReviewSchema = z.object({
@@ -60,6 +61,14 @@ export async function submitCycleReview(_state: unknown, formData: FormData) {
       status: action === 'submit' ? 'COMPLETED' : 'IN_PROGRESS',
       submittedAt: action === 'submit' ? new Date() : null,
     },
+  })
+
+  await audit({
+    actorId: session.userId,
+    action: action === 'submit' ? 'review.submit' : 'review.save',
+    entityType: 'CycleReview',
+    entityId: reviewId,
+    details: { rating, hasComments: !!(strengths || improvements || goals) },
   })
 
   revalidatePath('/dashboard/reviews')

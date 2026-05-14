@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth'
 import { propagateAccessUpChain } from '@/lib/hierarchy'
 import { validateEmailDomain } from '@/lib/email-validation'
 import { sendEmail, inviteEmail } from '@/lib/email'
+import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 import { Role } from '@prisma/client'
 
@@ -163,6 +164,14 @@ export async function createUser(_state: unknown, formData: FormData) {
     }
   }
 
+  await audit({
+    actorId: adminSession.userId,
+    action: data.role === 'TEAM_MEMBER' ? 'employee.create' : 'user.create',
+    entityType: data.role === 'TEAM_MEMBER' ? 'Employee' : 'User',
+    entityId: newUserId ?? undefined,
+    details: { name: data.name, email: data.email, role: data.role },
+  })
+
   revalidatePath('/dashboard/admin/users')
   revalidatePath('/dashboard/admin/teams')
   revalidatePath('/dashboard/teams')
@@ -170,8 +179,19 @@ export async function createUser(_state: unknown, formData: FormData) {
 }
 
 export async function deleteUser(userId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
+  const target = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { name: true, email: true, role: true },
+  })
   await prisma.user.delete({ where: { id: userId } })
+  await audit({
+    actorId: session.userId,
+    action: 'user.delete',
+    entityType: 'User',
+    entityId: userId,
+    details: target ?? undefined,
+  })
   revalidatePath('/dashboard/admin/users')
 }
 
@@ -183,20 +203,35 @@ const CreateTeamSchema = z.object({
 })
 
 export async function adminCreateTeam(_state: unknown, formData: FormData) {
-  await requireAdmin()
+  const session = await requireAdmin()
   const validated = CreateTeamSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description') || undefined,
   })
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
-  await prisma.team.create({ data: validated.data })
+  const team = await prisma.team.create({ data: validated.data })
+  await audit({
+    actorId: session.userId,
+    action: 'team.create',
+    entityType: 'Team',
+    entityId: team.id,
+    details: { name: team.name },
+  })
   revalidatePath('/dashboard/admin/teams')
   return { success: true }
 }
 
 export async function deleteTeam(teamId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
+  const team = await prisma.team.findUnique({ where: { id: teamId }, select: { name: true } })
   await prisma.team.delete({ where: { id: teamId } })
+  await audit({
+    actorId: session.userId,
+    action: 'team.delete',
+    entityType: 'Team',
+    entityId: teamId,
+    details: team ?? undefined,
+  })
   revalidatePath('/dashboard/admin/teams')
 }
 
@@ -207,7 +242,7 @@ const AssignAccessSchema = z.object({
 })
 
 export async function assignUserToTeam(_state: unknown, formData: FormData) {
-  await requireAdmin()
+  const session = await requireAdmin()
   const validated = AssignAccessSchema.safeParse({
     teamId: formData.get('teamId'),
     userId: formData.get('userId'),
@@ -224,13 +259,28 @@ export async function assignUserToTeam(_state: unknown, formData: FormData) {
   // Cascade this team to all supervisors above the user.
   await propagateAccessUpChain(userId)
 
+  await audit({
+    actorId: session.userId,
+    action: 'team.access.grant',
+    entityType: 'TeamAccess',
+    entityId: `${userId}|${teamId}`,
+    details: { userId, teamId, role },
+  })
+
   revalidatePath(`/dashboard/admin/teams/${teamId}`)
   revalidatePath('/dashboard/teams')
   return { success: true }
 }
 
 export async function removeUserFromTeam(teamId: string, userId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
   await prisma.teamAccess.deleteMany({ where: { teamId, userId } })
+  await audit({
+    actorId: session.userId,
+    action: 'team.access.revoke',
+    entityType: 'TeamAccess',
+    entityId: `${userId}|${teamId}`,
+    details: { userId, teamId },
+  })
   revalidatePath(`/dashboard/admin/teams/${teamId}`)
 }

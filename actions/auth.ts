@@ -3,6 +3,7 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/db'
 import { createSession, deleteSession } from '@/lib/session'
+import { audit } from '@/lib/audit'
 import { redirect } from 'next/navigation'
 
 const LoginSchema = z.object({
@@ -86,6 +87,13 @@ export async function setupPassword(state: SetupState, formData: FormData): Prom
       passwordSetupToken: null,
       passwordSetupExpiresAt: null,
     },
+  })
+
+  await audit({
+    actorId: user.id,
+    action: 'user.password.setup',
+    entityType: 'User',
+    entityId: user.id,
   })
 
   await createSession({ userId: user.id, email: user.email, name: user.name, role: user.role })

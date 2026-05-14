@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { canManageUser } from '@/lib/hierarchy'
 import { validateEmailDomain } from '@/lib/email-validation'
+import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
 const UpdateUserSchema = z.object({
@@ -54,6 +55,14 @@ export async function updateUser(_state: unknown, formData: FormData) {
   if (password) data.password = await bcrypt.hash(password, 12)
 
   await prisma.user.update({ where: { id: userId }, data })
+
+  await audit({
+    actorId: session.userId,
+    action: 'user.update',
+    entityType: 'User',
+    entityId: userId,
+    details: { name, email, passwordChanged: !!password },
+  })
 
   revalidatePath('/dashboard/admin/users')
   revalidatePath('/dashboard/teams', 'layout')

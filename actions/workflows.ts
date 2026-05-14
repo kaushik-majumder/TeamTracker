@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { notify, notifyAll } from '@/lib/notifications'
 import { workflowSubmittedEmail, workflowReviewedEmail } from '@/lib/email'
 import { approverRoleFor, findApproversForTeam, findAdmins, getDirectSupervisor } from '@/lib/hierarchy'
+import { audit } from '@/lib/audit'
 import { Role, WorkflowStatus } from '@prisma/client'
 
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
@@ -151,6 +152,18 @@ export async function createPromotionRequest(_state: unknown, formData: FormData
     }
   )
 
+  await audit({
+    actorId: session.userId,
+    action: 'promotion.create',
+    entityType: 'PromotionRequest',
+    entityId: request.id,
+    details: {
+      subjectName: subject.name,
+      currentTitle: data.currentTitle,
+      proposedTitle: data.proposedTitle,
+    },
+  })
+
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')
   return { success: true, requestId: request.id }
@@ -220,6 +233,19 @@ export async function createSalaryHikeRequest(_state: unknown, formData: FormDat
       },
     }
   )
+
+  await audit({
+    actorId: session.userId,
+    action: 'salary.create',
+    entityType: 'SalaryHikeRequest',
+    entityId: request.id,
+    details: {
+      subjectName: subject.name,
+      currentSalary: data.currentSalary,
+      proposedSalary: data.proposedSalary,
+      percentage: pct,
+    },
+  })
 
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')
@@ -324,6 +350,14 @@ export async function reviewPromotionRequest(_state: unknown, formData: FormData
     })
   }
 
+  await audit({
+    actorId: session.userId,
+    action: 'promotion.review',
+    entityType: 'PromotionRequest',
+    entityId: requestId,
+    details: { status, subjectName, reviewNote },
+  })
+
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')
   return { success: true }
@@ -394,6 +428,14 @@ export async function reviewSalaryHikeRequest(_state: unknown, formData: FormDat
       },
     })
   }
+
+  await audit({
+    actorId: session.userId,
+    action: 'salary.review',
+    entityType: 'SalaryHikeRequest',
+    entityId: requestId,
+    details: { status, subjectName, percentage: pct, reviewNote },
+  })
 
   revalidatePath('/dashboard/workflows')
   revalidatePath('/dashboard')

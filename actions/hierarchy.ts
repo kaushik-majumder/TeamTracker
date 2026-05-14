@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { levelOf, propagateAccessUpChain } from '@/lib/hierarchy'
+import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
 const SetReportsToSchema = z.object({
@@ -11,7 +12,7 @@ const SetReportsToSchema = z.object({
 })
 
 export async function setReportsTo(_state: unknown, formData: FormData) {
-  await requireAdmin()
+  const session = await requireAdmin()
   const raw = formData.get('reportsToId')
   const validated = SetReportsToSchema.safeParse({
     userId: formData.get('userId'),
@@ -64,6 +65,14 @@ export async function setReportsTo(_state: unknown, formData: FormData) {
     await propagateAccessUpChain(userId)
   }
 
+  await audit({
+    actorId: session.userId,
+    action: 'hierarchy.set',
+    entityType: 'User',
+    entityId: userId,
+    details: { reportsToId },
+  })
+
   revalidatePath('/dashboard/admin/hierarchy')
   revalidatePath('/dashboard/admin/teams')
   revalidatePath('/dashboard/teams')
@@ -76,7 +85,7 @@ export async function setReportsTo(_state: unknown, formData: FormData) {
  * automatic cascade.
  */
 export async function resyncHierarchyAccess() {
-  await requireAdmin()
+  const session = await requireAdmin()
 
   const users = await prisma.user.findMany({
     where: { role: { not: 'ADMIN' } },
@@ -91,6 +100,12 @@ export async function resyncHierarchyAccess() {
     const after = await prisma.teamAccess.count()
     granted += after - before
   }
+
+  await audit({
+    actorId: session.userId,
+    action: 'hierarchy.resync',
+    details: { granted, users: users.length },
+  })
 
   revalidatePath('/dashboard/admin/hierarchy')
   revalidatePath('/dashboard/admin/teams')

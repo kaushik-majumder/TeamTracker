@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db'
 import { requireAdmin, requireAuth } from '@/lib/auth'
 import { notify } from '@/lib/notifications'
 import { levelOf } from '@/lib/hierarchy'
+import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 import { Role } from '@prisma/client'
 
@@ -38,7 +39,7 @@ export async function createReviewCycle(_state: unknown, formData: FormData) {
   if (!validated.success) return { errors: z.flattenError(validated.error).fieldErrors }
 
   const data = validated.data
-  await prisma.reviewCycle.create({
+  const cycle = await prisma.reviewCycle.create({
     data: {
       name: data.name,
       description: data.description,
@@ -49,6 +50,14 @@ export async function createReviewCycle(_state: unknown, formData: FormData) {
         ? { create: data.selectedTeamIds.map((teamId) => ({ teamId })) }
         : undefined,
     },
+  })
+
+  await audit({
+    actorId: session.userId,
+    action: 'cycle.create',
+    entityType: 'ReviewCycle',
+    entityId: cycle.id,
+    details: { name: data.name, scope: data.scope, teamCount: data.selectedTeamIds.length },
   })
 
   revalidatePath('/dashboard/admin/review-cycles')
@@ -71,7 +80,7 @@ async function pickReviewerForEmployee(teamId: string): Promise<string | null> {
 }
 
 export async function openReviewCycle(cycleId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
   const cycle = await prisma.reviewCycle.findUnique({
     where: { id: cycleId },
     include: { teams: true },
@@ -163,6 +172,14 @@ export async function openReviewCycle(cycleId: string) {
     })
   }
 
+  await audit({
+    actorId: session.userId,
+    action: 'cycle.open',
+    entityType: 'ReviewCycle',
+    entityId: cycleId,
+    details: { cycleName: cycle.name, reviewsCreated: reviewRows.length },
+  })
+
   revalidatePath('/dashboard/admin/review-cycles')
   revalidatePath('/dashboard/admin/review-cycles/' + cycleId)
   revalidatePath('/dashboard/reviews')
@@ -171,7 +188,7 @@ export async function openReviewCycle(cycleId: string) {
 }
 
 export async function closeReviewCycle(cycleId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
   const cycle = await prisma.reviewCycle.findUnique({ where: { id: cycleId } })
   if (!cycle) return { message: 'Cycle not found' }
   if (cycle.status !== 'OPEN') return { message: 'Only OPEN cycles can be closed' }
@@ -180,13 +197,28 @@ export async function closeReviewCycle(cycleId: string) {
     where: { id: cycleId },
     data: { status: 'CLOSED' },
   })
+  await audit({
+    actorId: session.userId,
+    action: 'cycle.close',
+    entityType: 'ReviewCycle',
+    entityId: cycleId,
+    details: { cycleName: cycle.name },
+  })
   revalidatePath('/dashboard/admin/review-cycles')
   return { success: true }
 }
 
 export async function deleteReviewCycle(cycleId: string) {
-  await requireAdmin()
+  const session = await requireAdmin()
+  const cycle = await prisma.reviewCycle.findUnique({ where: { id: cycleId }, select: { name: true } })
   await prisma.reviewCycle.delete({ where: { id: cycleId } })
+  await audit({
+    actorId: session.userId,
+    action: 'cycle.delete',
+    entityType: 'ReviewCycle',
+    entityId: cycleId,
+    details: cycle ?? undefined,
+  })
   revalidatePath('/dashboard/admin/review-cycles')
 }
 

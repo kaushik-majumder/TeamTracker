@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Role } from '@prisma/client'
-import { Users, LayoutDashboard, GitBranch, UserPlus, Building2, Shield, Bell, Network, ClipboardCheck, CalendarRange } from 'lucide-react'
+import { Users, LayoutDashboard, GitBranch, UserPlus, Building2, Shield, Bell, Network, ClipboardCheck, CalendarRange, ScrollText } from 'lucide-react'
 
 type Props = {
   name: string
@@ -35,6 +35,7 @@ export function Sidebar({
     { href: '/dashboard/admin/teams', label: 'Manage Teams', icon: Building2 },
     { href: '/dashboard/admin/hierarchy', label: 'Hierarchy', icon: Network },
     { href: '/dashboard/admin/review-cycles', label: 'Review Cycles', icon: CalendarRange },
+    { href: '/dashboard/admin/audit-log', label: 'Audit Log', icon: ScrollText },
   ]
 
   const roleBadge = {

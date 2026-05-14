@@ -1,0 +1,6 @@
+# Run static checks + unit tests before letting the commit through.
+# Keep this script fast — heavy build steps belong in CI, not here.
+
+npx lint-staged
+npm run typecheck
+npm run test -- --run
