@@ -30,7 +30,7 @@ export function AssignUserForm({ teamId, users }: Props) {
           <option value="MANAGER">Manager</option>
           <option value="TEAM_LEAD">Team Lead</option>
         </select>
-        <p className="text-xs text-gray-400 mt-1">The user's base role can differ from their per-team role.</p>
+        <p className="text-xs text-gray-400 mt-1">The user&apos;s base role can differ from their per-team role.</p>
       </div>
       {s?.success && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">Access granted.</p>}
       <button type="submit" disabled={pending} className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors">

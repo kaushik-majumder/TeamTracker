@@ -75,7 +75,6 @@ export async function propagateAccessUpChain(userId: string) {
   const visited = new Set<string>([userId])
   let cursor: string = userId
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const next: { reportsTo: { id: string; role: Role } | null } | null =
       await prisma.user.findUnique({

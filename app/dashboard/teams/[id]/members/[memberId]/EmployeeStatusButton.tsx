@@ -46,7 +46,7 @@ export function EmployeeStatusButton({ employeeId, status }: Props) {
               <button onClick={() => setOpen(false)}><X size={18} className="text-gray-400" /></button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Their data will remain for reference, but they won't receive anniversary emails or appear in pending workflows.
+              Their data will remain for reference, but they won&apos;t receive anniversary emails or appear in pending workflows.
             </p>
             <div className="mb-4">
               <label className="block text-xs font-medium text-gray-600 mb-1">Last Working Day</label>

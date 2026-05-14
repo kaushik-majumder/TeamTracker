@@ -72,7 +72,7 @@ export function WorkflowButtons({ employeeId, teamId, currentTitle, role }: Prop
               <div className="flex flex-col items-center py-8 text-center">
                 <CheckCircle2 size={48} className="text-green-500 mb-3" />
                 <p className="font-medium text-gray-900">Promotion request submitted</p>
-                <p className="text-sm text-gray-500 mt-1">Sent to the team's manager for review.</p>
+                <p className="text-sm text-gray-500 mt-1">Sent to the team&apos;s manager for review.</p>
               </div>
             ) : (
               <form action={promoAction} className="space-y-3">
@@ -132,7 +132,7 @@ export function WorkflowButtons({ employeeId, teamId, currentTitle, role }: Prop
               <div className="flex flex-col items-center py-8 text-center">
                 <CheckCircle2 size={48} className="text-green-500 mb-3" />
                 <p className="font-medium text-gray-900">Salary hike request submitted</p>
-                <p className="text-sm text-gray-500 mt-1">Sent to the team's manager for review.</p>
+                <p className="text-sm text-gray-500 mt-1">Sent to the team&apos;s manager for review.</p>
               </div>
             ) : (
               <form action={salaryAction} className="space-y-3">

@@ -1,7 +1,7 @@
 import { requireAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { formatDistanceToNow } from 'date-fns'
-import { Bell, CheckCheck } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { MarkAllReadButton } from './MarkAllReadButton'
 import { NotificationItem } from './NotificationItem'
 

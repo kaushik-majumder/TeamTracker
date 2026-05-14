@@ -6,7 +6,7 @@ type Props = { requestId: string; type: 'promotion' | 'salary' }
 
 export function ReviewForm({ requestId, type }: Props) {
   const action = type === 'promotion' ? reviewPromotionRequest : reviewSalaryHikeRequest
-  const [state, formAction, pending] = useActionState(action, undefined)
+  const [, formAction, pending] = useActionState(action, undefined)
 
   return (
     <form action={formAction} className="mt-4 pt-4 border-t border-gray-100 space-y-2">

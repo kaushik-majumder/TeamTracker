@@ -13,8 +13,6 @@ vi.mock('nodemailer', () => ({
   },
 }))
 
-import { sendEmail } from '@/lib/email'
-
 beforeEach(() => {
   sendMailMock.mockReset()
   // Reset module-level transporter cache so each test starts fresh

@@ -1,12 +1,11 @@
 'use server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
-import { requireAdmin, requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { notify } from '@/lib/notifications'
 import { levelOf } from '@/lib/hierarchy'
 import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
-import { Role } from '@prisma/client'
 
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
 

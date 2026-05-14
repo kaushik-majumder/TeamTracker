@@ -12,14 +12,7 @@ import { Role, WorkflowStatus } from '@prisma/client'
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
 
 // Subject is either an Employee (team_member) or a User (lead/manager)
-const SubjectSchema = z
-  .object({
-    employeeId: z.string().optional(),
-    subjectUserId: z.string().optional(),
-  })
-  .refine((v) => !!v.employeeId !== !!v.subjectUserId, {
-    message: 'Provide exactly one of employeeId or subjectUserId',
-  })
+// — enforced by per-schema refines below.
 
 const PromotionSchema = z
   .object({
