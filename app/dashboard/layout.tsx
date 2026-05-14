@@ -72,13 +72,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  const [unreadNotifs, userProfile] = await Promise.all([
+  const [unreadNotifs, userProfile, pendingReviews] = await Promise.all([
     prisma.notification.count({
       where: { userId: session.userId, readAt: null },
     }),
     prisma.user.findUnique({
       where: { id: session.userId },
       select: { profileImageUrl: true },
+    }),
+    prisma.cycleReview.count({
+      where: {
+        reviewerId: session.userId,
+        status: { not: 'COMPLETED' },
+        cycle: { status: 'OPEN' },
+      },
     }),
   ])
 
@@ -89,6 +96,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         role={session.role}
         pendingWorkflows={pendingReviewable}
         unreadNotifications={unreadNotifs}
+        pendingReviews={pendingReviews}
       />
       <main className="flex-1 flex flex-col overflow-hidden">
         <TopBar name={session.name} email={session.email} imageUrl={userProfile?.profileImageUrl} />

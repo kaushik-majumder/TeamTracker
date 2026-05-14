@@ -34,6 +34,13 @@ export default async function MemberDetailPage({
       },
       promotionRequests: { orderBy: { createdAt: 'desc' }, take: 3 },
       salaryRequests: { orderBy: { createdAt: 'desc' }, take: 3 },
+      cycleReviews: {
+        include: {
+          cycle: { select: { name: true, endDate: true } },
+          reviewer: { select: { name: true } },
+        },
+        orderBy: { cycle: { endDate: 'desc' } },
+      },
     },
   })
 
@@ -96,6 +103,58 @@ export default async function MemberDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Cycle Reviews (structured) */}
+      {employee.cycleReviews.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+          <h2 className="font-semibold text-gray-900 mb-3">Performance Reviews</h2>
+          <div className="space-y-3">
+            {employee.cycleReviews.map((r) => (
+              <div key={r.id} className="border-t border-gray-100 pt-3 first:border-t-0 first:pt-0">
+                <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
+                  <span className="text-sm font-medium text-gray-800">{r.cycle.name}</span>
+                  <div className="flex items-center gap-2">
+                    {r.rating && (
+                      <span className="text-amber-500 text-sm">
+                        {'★'.repeat(r.rating)}
+                        <span className="text-gray-200">{'★'.repeat(5 - r.rating)}</span>
+                      </span>
+                    )}
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      r.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                      r.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-700' :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      {r.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                {r.strengths && (
+                  <div className="mt-2">
+                    <p className="text-xs font-medium text-gray-500">Strengths</p>
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.strengths}</p>
+                  </div>
+                )}
+                {r.improvements && (
+                  <div className="mt-2">
+                    <p className="text-xs font-medium text-gray-500">Areas for Improvement</p>
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.improvements}</p>
+                  </div>
+                )}
+                {r.goals && (
+                  <div className="mt-2">
+                    <p className="text-xs font-medium text-gray-500">Goals</p>
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.goals}</p>
+                  </div>
+                )}
+                <p className="text-xs text-gray-400 mt-2">
+                  by {r.reviewer?.name ?? 'Unassigned'} · cycle ends {format(r.cycle.endDate, 'MMM d, yyyy')}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Performance Records */}

@@ -2,16 +2,23 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Role } from '@prisma/client'
-import { Users, LayoutDashboard, GitBranch, UserPlus, Building2, Shield, Bell, Network } from 'lucide-react'
+import { Users, LayoutDashboard, GitBranch, UserPlus, Building2, Shield, Bell, Network, ClipboardCheck, CalendarRange } from 'lucide-react'
 
 type Props = {
   name: string
   role: Role
   pendingWorkflows?: number
   unreadNotifications?: number
+  pendingReviews?: number
 }
 
-export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications = 0 }: Props) {
+export function Sidebar({
+  name,
+  role,
+  pendingWorkflows = 0,
+  unreadNotifications = 0,
+  pendingReviews = 0,
+}: Props) {
   const pathname = usePathname()
   const isAdmin = role === 'ADMIN'
 
@@ -19,6 +26,7 @@ export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications 
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true, badge: 0 },
     { href: '/dashboard/teams', label: 'Teams', icon: Users, badge: 0 },
     { href: '/dashboard/workflows', label: 'Workflows', icon: GitBranch, badge: pendingWorkflows },
+    { href: '/dashboard/reviews', label: 'Reviews', icon: ClipboardCheck, badge: pendingReviews },
     { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: unreadNotifications },
   ]
 
@@ -26,6 +34,7 @@ export function Sidebar({ name, role, pendingWorkflows = 0, unreadNotifications 
     { href: '/dashboard/admin/users', label: 'Manage Users', icon: UserPlus },
     { href: '/dashboard/admin/teams', label: 'Manage Teams', icon: Building2 },
     { href: '/dashboard/admin/hierarchy', label: 'Hierarchy', icon: Network },
+    { href: '/dashboard/admin/review-cycles', label: 'Review Cycles', icon: CalendarRange },
   ]
 
   const roleBadge = {

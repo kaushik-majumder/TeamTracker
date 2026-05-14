@@ -2,7 +2,7 @@
 import { markNotificationRead } from '@/actions/notifications'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import { TrendingUp, DollarSign, CheckCircle2, XCircle } from 'lucide-react'
+import { TrendingUp, DollarSign, CheckCircle2, ClipboardCheck } from 'lucide-react'
 import { NotificationType } from '@prisma/client'
 
 type Props = {
@@ -15,12 +15,13 @@ type Props = {
   timeAgo: string
 }
 
-const iconFor = {
+const iconFor: Record<NotificationType, { icon: typeof TrendingUp; color: string }> = {
   PROMOTION_SUBMITTED: { icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
   PROMOTION_REVIEWED: { icon: CheckCircle2, color: 'text-green-600 bg-green-50' },
   SALARY_SUBMITTED: { icon: DollarSign, color: 'text-purple-600 bg-purple-50' },
   SALARY_REVIEWED: { icon: CheckCircle2, color: 'text-green-600 bg-green-50' },
-} as const
+  REVIEW_ASSIGNED: { icon: ClipboardCheck, color: 'text-indigo-600 bg-indigo-50' },
+}
 
 export function NotificationItem({ id, type, title, message, link, unread, timeAgo }: Props) {
   const router = useRouter()

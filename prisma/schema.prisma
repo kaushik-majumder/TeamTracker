@@ -29,6 +29,19 @@ enum NotificationType {
   PROMOTION_REVIEWED
   SALARY_SUBMITTED
   SALARY_REVIEWED
+  REVIEW_ASSIGNED
+}
+
+enum CycleStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum ReviewStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
 }
 
 model User {
@@ -57,6 +70,8 @@ model User {
   salarySubject       SalaryHikeRequest[] @relation("SalarySubject")
   performanceNotes    PerformanceRecord[]
   notifications       Notification[]
+  cyclesCreated       ReviewCycle[]
+  reviewsAssigned     CycleReview[] @relation("ReviewReviewer")
 }
 
 model Team {
@@ -70,6 +85,7 @@ model Team {
   employees         Employee[]
   promotionRequests PromotionRequest[]
   salaryRequests    SalaryHikeRequest[]
+  reviewCycleTeams  ReviewCycleTeam[]
 }
 
 model TeamAccess {
@@ -101,6 +117,7 @@ model Employee {
   promotionRequests  PromotionRequest[]
   salaryRequests     SalaryHikeRequest[]
   anniversaryEmails  AnniversaryEmail[]
+  cycleReviews       CycleReview[]
 }
 
 model PerformanceRecord {
@@ -198,4 +215,55 @@ model AnniversaryEmail {
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([employeeId, year])
+}
+
+model ReviewCycle {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      CycleStatus @default(DRAFT)
+  createdBy   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  author  User?             @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  teams   ReviewCycleTeam[]
+  reviews CycleReview[]
+}
+
+// If a cycle has zero ReviewCycleTeam rows, it applies to ALL teams.
+// Otherwise it's limited to the linked teams.
+model ReviewCycleTeam {
+  id      String @id @default(cuid())
+  cycleId String
+  teamId  String
+
+  cycle ReviewCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  team  Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([cycleId, teamId])
+}
+
+model CycleReview {
+  id           String       @id @default(cuid())
+  cycleId      String
+  employeeId   String
+  reviewerId   String?
+  rating       Int?
+  strengths    String?
+  improvements String?
+  goals        String?
+  status       ReviewStatus @default(NOT_STARTED)
+  submittedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  cycle    ReviewCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  employee Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewer User?       @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@unique([cycleId, employeeId])
+  @@index([reviewerId, status])
 }
