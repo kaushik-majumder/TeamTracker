@@ -49,10 +49,10 @@ export async function GET(request: Request) {
         html: `
           <div style="font-family:-apple-system,system-ui,sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#1f2937;">
             <h2 style="margin-top:0;">🎉 Happy Work Anniversary, ${emp.name}!</h2>
-            <p>Today marks your <strong>${yearsAtCompany}-year</strong> anniversary with us on the <strong>${emp.team.name}</strong> team.</p>
+            <p>Today marks your <strong>${yearsAtCompany}-year</strong> anniversary with us on <strong>${emp.team.name}</strong>.</p>
             <p>Thank you for everything you bring — your dedication and hard work are truly appreciated.</p>
             <p>Here's to many more great years ahead!</p>
-            <p style="color:#9ca3af;font-size:12px;margin-top:32px;">— TeamTracker</p>
+            <p style="color:#9ca3af;font-size:12px;margin-top:32px;">— Team eXp Realty</p>
           </div>
         `,
       })
