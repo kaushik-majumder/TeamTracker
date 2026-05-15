@@ -31,10 +31,13 @@ export function DashboardShell({
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Sidebar — fixed on mobile (drawer), static on desktop */}
+    // h-screen locks the shell to one viewport so the sidebar and main
+    // share the same vertical bounds. Scrolling happens inside the main
+    // content area only — the sidebar stays put with no empty bottom.
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
+      {/* Sidebar — fixed on mobile (drawer), static + full-height on desktop */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-60 transform transition-transform duration-200 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-60 transform transition-transform duration-200 md:static md:translate-x-0 md:h-full ${
           drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >

@@ -95,11 +95,11 @@ export default async function WorkflowsPage() {
   const cardTheme = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white'
+        return 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white dark:from-amber-950/30 dark:to-gray-900'
       case 'APPROVED':
-        return 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white'
+        return 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white dark:from-emerald-950/30 dark:to-gray-900'
       case 'REJECTED':
-        return 'border-l-4 border-l-rose-400 bg-gradient-to-r from-rose-50/40 to-white'
+        return 'border-l-4 border-l-rose-400 bg-gradient-to-r from-rose-50/40 to-white dark:from-rose-950/30 dark:to-gray-900'
       default:
         return 'border-l-4 border-l-gray-300 bg-white dark:bg-gray-900'
     }

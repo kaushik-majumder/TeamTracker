@@ -54,7 +54,7 @@ export function Sidebar({
   }
 
   return (
-    <aside className="w-60 min-h-screen bg-gray-900 text-white flex flex-col">
+    <aside className="w-60 h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
       <div className="px-5 py-5 border-b border-gray-700">
         <p className="font-bold text-lg">TeamTracker</p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{name}</p>

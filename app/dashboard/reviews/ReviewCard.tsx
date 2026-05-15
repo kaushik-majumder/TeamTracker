@@ -27,8 +27,8 @@ const statusColor: Record<ReviewStatus, string> = {
 
 const cardTheme: Record<ReviewStatus, string> = {
   NOT_STARTED: 'border-l-4 border-l-gray-300',
-  IN_PROGRESS: 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white',
-  COMPLETED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white',
+  IN_PROGRESS: 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white dark:from-amber-950/30 dark:to-gray-900',
+  COMPLETED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white dark:from-emerald-950/30 dark:to-gray-900',
 }
 
 export function ReviewCard(props: Props) {

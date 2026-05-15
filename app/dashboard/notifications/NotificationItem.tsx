@@ -40,8 +40,8 @@ export function NotificationItem({ id, type, title, message, link, unread, timeA
       onClick={handleClick}
       className={`w-full flex items-start gap-3 p-4 rounded-xl border text-left transition-all hover:shadow-md ${
         unread
-          ? 'bg-gradient-to-r from-blue-50 to-white border-blue-200 hover:from-blue-100'
-          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+          ? 'bg-gradient-to-r from-blue-50 to-white border-blue-200 hover:from-blue-100 dark:from-blue-950/40 dark:to-gray-900 dark:border-blue-900/40 dark:hover:from-blue-900/60'
+          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
       }`}
     >
       <div className={`p-2 rounded-lg ${color} mt-0.5`}>

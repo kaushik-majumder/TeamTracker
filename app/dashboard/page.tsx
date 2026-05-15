@@ -122,7 +122,7 @@ export default async function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 mb-8">
           <Link
             href="/dashboard/admin/users"
-            className="group bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100 p-5 transition-all hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-0.5 flex items-start gap-3"
+            className="group bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/30 dark:to-gray-900 rounded-xl border border-purple-100 dark:border-purple-900/40 p-5 transition-all hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-0.5 flex items-start gap-3"
           >
             <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
               <UserPlus size={20} />
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
           </Link>
           <Link
             href="/dashboard/admin/teams"
-            className="group bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 p-5 transition-all hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 flex items-start gap-3"
+            className="group bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-gray-900 rounded-xl border border-blue-100 dark:border-blue-900/40 p-5 transition-all hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 flex items-start gap-3"
           >
             <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
               <Building2 size={20} />

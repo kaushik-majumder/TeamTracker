@@ -24,8 +24,8 @@ export default async function AdminCyclesPage() {
 
   const cardTheme = {
     DRAFT: 'border-l-4 border-l-gray-300 bg-white dark:bg-gray-900',
-    OPEN: 'border-l-4 border-l-blue-400 bg-gradient-to-r from-blue-50/40 to-white',
-    CLOSED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white',
+    OPEN: 'border-l-4 border-l-blue-400 bg-gradient-to-r from-blue-50/40 to-white dark:from-blue-950/30 dark:to-gray-900',
+    CLOSED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white dark:from-emerald-950/30 dark:to-gray-900',
   }
 
   return (
