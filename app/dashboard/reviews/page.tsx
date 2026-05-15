@@ -22,13 +22,13 @@ export default async function ReviewsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">My Reviews</h1>
-        <p className="text-sm text-gray-500 mt-1">Performance reviews assigned to you.</p>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">My Reviews</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Performance reviews assigned to you.</p>
       </div>
 
       {pending.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
             Pending · {pending.length}
           </h2>
           <div className="space-y-3">
@@ -55,7 +55,7 @@ export default async function ReviewsPage() {
 
       {completed.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
             Completed · {completed.length}
           </h2>
           <div className="space-y-3">
@@ -82,7 +82,7 @@ export default async function ReviewsPage() {
 
       {closed.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
             Past Cycles · {closed.length}
           </h2>
           <div className="space-y-3">
@@ -108,7 +108,7 @@ export default async function ReviewsPage() {
       )}
 
       {reviews.length === 0 && (
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-12 text-center text-sm text-gray-600">
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-12 text-center text-sm text-gray-600 dark:text-gray-400">
           You have no reviews assigned. When an admin opens a review cycle that includes your team,
           your pending reviews will appear here.
         </div>

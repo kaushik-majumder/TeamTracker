@@ -57,7 +57,7 @@ export function Sidebar({
     <aside className="w-60 min-h-screen bg-gray-900 text-white flex flex-col">
       <div className="px-5 py-5 border-b border-gray-700">
         <p className="font-bold text-lg">TeamTracker</p>
-        <p className="text-xs text-gray-400 mt-0.5 truncate">{name}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{name}</p>
         <span className={`inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${roleBadge.cls}`}>
           {roleBadge.label}
         </span>
@@ -78,7 +78,7 @@ export function Sidebar({
 
         {isAdmin && (
           <div className="mt-6 pt-4 border-t border-gray-700">
-            <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+            <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               <Shield size={11} /> Admin
             </p>
             {adminItems.map(({ href, label, icon: Icon }) => (

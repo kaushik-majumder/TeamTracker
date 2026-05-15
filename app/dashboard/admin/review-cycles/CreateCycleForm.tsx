@@ -23,7 +23,7 @@ export function CreateCycleForm({ teams }: Props) {
   return (
     <form action={action} className="space-y-3" key={s?.success ? 'reset' : 'form'}>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Cycle Name</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Cycle Name</label>
         <input
           name="name"
           placeholder="Q1 2026"
@@ -33,8 +33,8 @@ export function CreateCycleForm({ teams }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">
-          Description <span className="text-gray-400 font-normal">(optional)</span>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+          Description <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
         </label>
         <textarea
           name="description"
@@ -45,7 +45,7 @@ export function CreateCycleForm({ teams }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Start</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Start</label>
           <input
             name="startDate"
             type="date"
@@ -54,7 +54,7 @@ export function CreateCycleForm({ teams }: Props) {
           {s?.errors?.startDate && <p className="text-xs text-red-500 mt-1">{s.errors.startDate[0]}</p>}
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">End</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">End</label>
           <input
             name="endDate"
             type="date"
@@ -65,7 +65,7 @@ export function CreateCycleForm({ teams }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-2">Scope</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Scope</label>
         <input type="hidden" name="scope" value={scope} />
         <div className="space-y-2 mb-2">
           {(['ALL', 'SELECTED'] as const).map((mode) => (
@@ -76,18 +76,18 @@ export function CreateCycleForm({ teams }: Props) {
                 onChange={() => setScope(mode)}
                 className="text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-gray-700">{mode === 'ALL' ? 'All teams' : 'Specific teams'}</span>
+              <span className="text-gray-700 dark:text-gray-300">{mode === 'ALL' ? 'All teams' : 'Specific teams'}</span>
             </label>
           ))}
         </div>
 
         {scope === 'SELECTED' && (
-          <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
+          <div className="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded-lg p-2 space-y-1">
             {teams.length === 0 ? (
-              <p className="text-xs text-gray-500 p-2">No teams yet — create teams first.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 p-2">No teams yet — create teams first.</p>
             ) : (
               teams.map((t) => (
-                <label key={t.id} className="flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded hover:bg-gray-50">
+                <label key={t.id} className="flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50">
                   <input
                     type="checkbox"
                     name="selectedTeamIds"
@@ -96,7 +96,7 @@ export function CreateCycleForm({ teams }: Props) {
                     onChange={() => toggle(t.id)}
                     className="text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-gray-700">{t.name}</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t.name}</span>
                 </label>
               ))
             )}

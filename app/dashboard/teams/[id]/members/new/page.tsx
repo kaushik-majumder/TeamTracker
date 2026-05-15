@@ -11,18 +11,18 @@ export default function NewMemberPage() {
   return (
     <div className="max-w-lg">
       <div className="mb-6">
-        <Link href={`/dashboard/teams/${params.id}`} className="text-sm text-gray-500 hover:text-gray-700">
+        <Link href={`/dashboard/teams/${params.id}`} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300">
           ← Back to team
         </Link>
-        <h1 className="text-xl font-bold text-gray-900 mt-2">Add Team Member</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-2">Add Team Member</h1>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         <form action={action} className="space-y-4">
           <input type="hidden" name="teamId" value={params.id} />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
             <input
               name="name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -32,7 +32,7 @@ export default function NewMemberPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
             <input
               name="email"
               type="email"
@@ -43,7 +43,7 @@ export default function NewMemberPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Designation</label>
             <input
               name="title"
               list="designation-options"
@@ -65,7 +65,7 @@ export default function NewMemberPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Join Date</label>
             <input
               name="joinDate"
               type="date"

@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
+/* Tailwind v4 already enables `dark:` variants via prefers-color-scheme by default.
+   The custom-variant directive below makes the same trigger explicit, so future
+   code that uses `@variant dark { ... }` stays consistent with our utilities. */
+@custom-variant dark (&:where(.dark, .dark *), &:where([data-theme="dark"], [data-theme="dark"] *), @media (prefers-color-scheme: dark));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b0f17;
+    --foreground: #e5e7eb;
+  }
 }
 
 @theme inline {
@@ -18,11 +30,22 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
+/* Form fields adapt to dark mode without every input needing dark: classes */
 input, textarea, select {
   color: #111827;
   background-color: #ffffff;
 }
-
 input::placeholder, textarea::placeholder {
   color: #9ca3af;
+}
+
+@media (prefers-color-scheme: dark) {
+  input, textarea, select {
+    color: #f3f4f6;
+    background-color: #111827;
+    border-color: #374151;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #6b7280;
+  }
 }

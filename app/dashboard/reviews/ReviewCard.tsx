@@ -20,7 +20,7 @@ type Props = {
 }
 
 const statusColor: Record<ReviewStatus, string> = {
-  NOT_STARTED: 'bg-gray-100 text-gray-600',
+  NOT_STARTED: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
   IN_PROGRESS: 'bg-amber-100 text-amber-700',
   COMPLETED: 'bg-green-100 text-green-700',
 }
@@ -48,22 +48,22 @@ export function ReviewCard(props: Props) {
   }, [s?.success, s?.submitted])
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden transition-shadow hover:shadow-md ${cardTheme[props.status]}`}>
+    <div className={`bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-shadow hover:shadow-md ${cardTheme[props.status]}`}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-start justify-between gap-3 p-5 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-start justify-between gap-3 p-5 text-left hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors"
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-gray-900">{props.employeeName}</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">{props.employeeName}</span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor[props.status]}`}>
               {props.status.replace('_', ' ')}
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {props.employeeTitle} · {props.teamName}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             {props.cycleName} · due {props.cycleDueDate}
           </p>
         </div>
@@ -74,24 +74,24 @@ export function ReviewCard(props: Props) {
               <span className="text-gray-200">{'★'.repeat(5 - props.rating)}</span>
             </span>
           )}
-          {open ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+          {open ? <ChevronUp size={16} className="text-gray-400 dark:text-gray-500" /> : <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />}
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-gray-100 p-5">
+        <div className="border-t border-gray-100 dark:border-gray-800 p-5">
           {justSubmitted ? (
             <div className="flex flex-col items-center py-6 text-center">
               <CheckCircle2 size={40} className="text-green-500 mb-2" />
-              <p className="font-medium text-gray-900">Review submitted</p>
-              <p className="text-sm text-gray-500 mt-1">Thanks for completing this review.</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">Review submitted</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Thanks for completing this review.</p>
             </div>
           ) : props.canEdit ? (
             <form action={action} className="space-y-3">
               <input type="hidden" name="reviewId" value={props.id} />
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Overall Rating</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Overall Rating</label>
                 <select
                   name="rating"
                   defaultValue={props.rating ?? ''}
@@ -106,7 +106,7 @@ export function ReviewCard(props: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Strengths</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Strengths</label>
                 <textarea
                   name="strengths"
                   rows={3}
@@ -118,7 +118,7 @@ export function ReviewCard(props: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Areas for Improvement</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Areas for Improvement</label>
                 <textarea
                   name="improvements"
                   rows={3}
@@ -129,7 +129,7 @@ export function ReviewCard(props: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Goals for Next Period</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Goals for Next Period</label>
                 <textarea
                   name="goals"
                   rows={3}
@@ -150,7 +150,7 @@ export function ReviewCard(props: Props) {
                   name="action"
                   value="save"
                   disabled={pending}
-                  className="text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-60 font-medium py-2 px-4 rounded-lg transition-colors"
+                  className="text-sm border border-gray-300 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 disabled:opacity-60 font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Save Draft
                 </button>
@@ -170,7 +170,7 @@ export function ReviewCard(props: Props) {
             <div className="space-y-3 text-sm">
               {props.rating && (
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-0.5">Rating</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">Rating</p>
                   <p className="text-amber-500">
                     {'★'.repeat(props.rating)}<span className="text-gray-200">{'★'.repeat(5 - props.rating)}</span>
                   </p>
@@ -178,24 +178,24 @@ export function ReviewCard(props: Props) {
               )}
               {props.strengths && (
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-0.5">Strengths</p>
-                  <p className="text-gray-700 whitespace-pre-wrap">{props.strengths}</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">Strengths</p>
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{props.strengths}</p>
                 </div>
               )}
               {props.improvements && (
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-0.5">Areas for Improvement</p>
-                  <p className="text-gray-700 whitespace-pre-wrap">{props.improvements}</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">Areas for Improvement</p>
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{props.improvements}</p>
                 </div>
               )}
               {props.goals && (
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-0.5">Goals</p>
-                  <p className="text-gray-700 whitespace-pre-wrap">{props.goals}</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">Goals</p>
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{props.goals}</p>
                 </div>
               )}
               {!props.rating && !props.strengths && !props.improvements && !props.goals && (
-                <p className="text-gray-400 italic">No content recorded.</p>
+                <p className="text-gray-400 dark:text-gray-500 italic">No content recorded.</p>
               )}
             </div>
           )}

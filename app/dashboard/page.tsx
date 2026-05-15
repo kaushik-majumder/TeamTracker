@@ -84,9 +84,17 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Welcome back, {session.name.split(' ')[0]}</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {isAdmin ? 'Admin view' : session.role === 'MANAGER' ? 'Manager view' : 'Team Lead view'} ·{' '}
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome back, {session.name.split(' ')[0]}</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {
+            isAdmin
+              ? 'Admin view'
+              : session.role === 'MANAGING_DIRECTOR'
+                ? 'Managing Director view'
+                : session.role === 'MANAGER'
+                  ? 'Manager view'
+                  : 'Team Lead view'
+          } ·{' '}
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -98,13 +106,13 @@ export default async function DashboardPage() {
             <Link
               key={label}
               href={href}
-              className={`relative bg-white rounded-xl border border-gray-200 p-5 overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 ${theme.hover} before:absolute before:top-0 before:left-0 before:right-0 before:h-1 ${theme.top}`}
+              className={`relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 ${theme.hover} before:absolute before:top-0 before:left-0 before:right-0 before:h-1 ${theme.top}`}
             >
               <div className={`inline-flex p-2 rounded-lg mb-3 ${theme.icon}`}>
                 <Icon size={18} />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{value}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{label}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{label}</p>
             </Link>
           )
         })}
@@ -120,8 +128,8 @@ export default async function DashboardPage() {
               <UserPlus size={20} />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Create User</p>
-              <p className="text-sm text-gray-600 mt-1">Add a manager or team lead and optionally assign them to a team in one step.</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">Create User</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Add a manager or team lead and optionally assign them to a team in one step.</p>
             </div>
           </Link>
           <Link
@@ -132,8 +140,8 @@ export default async function DashboardPage() {
               <Building2 size={20} />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Manage Teams</p>
-              <p className="text-sm text-gray-600 mt-1">Create teams and assign which managers and leads can see them.</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">Manage Teams</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Create teams and assign which managers and leads can see them.</p>
             </div>
           </Link>
         </div>
@@ -141,7 +149,7 @@ export default async function DashboardPage() {
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900">{isAdmin ? 'All Teams' : 'Your Teams'}</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">{isAdmin ? 'All Teams' : 'Your Teams'}</h2>
           {isAdmin && (
             <Link href="/dashboard/admin/teams" className="text-sm text-blue-600 hover:underline">
               Manage →
@@ -149,7 +157,7 @@ export default async function DashboardPage() {
           )}
         </div>
         {teams.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500 text-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 text-center text-gray-500 dark:text-gray-400 text-sm">
             {isAdmin ? (
               <>
                 No teams yet.{' '}
@@ -170,13 +178,13 @@ export default async function DashboardPage() {
                 <Link
                   key={team.id}
                   href={`/dashboard/teams/${team.id}`}
-                  className={`group relative bg-white rounded-xl border ${c.border} p-5 overflow-hidden transition-all hover:shadow-lg ${c.hoverShadow} hover:-translate-y-0.5`}
+                  className={`group relative bg-white dark:bg-gray-900 rounded-xl border ${c.border} p-5 overflow-hidden transition-all hover:shadow-lg ${c.hoverShadow} hover:-translate-y-0.5`}
                 >
                   <div className={`absolute left-0 top-0 bottom-0 w-1 ${c.accent}`} />
                   <div className="pl-2">
-                    <p className="font-medium text-gray-900">{team.name}</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{team.name}</p>
                     {team.description && (
-                      <p className="text-sm text-gray-500 mt-1 truncate">{team.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">{team.description}</p>
                     )}
                     <div className="flex items-center gap-1.5 mt-3">
                       <Users size={12} className={c.text} />

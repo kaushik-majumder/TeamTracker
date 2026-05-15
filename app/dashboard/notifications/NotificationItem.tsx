@@ -26,7 +26,7 @@ const iconFor: Record<NotificationType, { icon: typeof TrendingUp; color: string
 export function NotificationItem({ id, type, title, message, link, unread, timeAgo }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const { icon: Icon, color } = iconFor[type] ?? { icon: TrendingUp, color: 'text-gray-600 bg-gray-50' }
+  const { icon: Icon, color } = iconFor[type] ?? { icon: TrendingUp, color: 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50' }
 
   const handleClick = () => {
     if (unread) {
@@ -41,7 +41,7 @@ export function NotificationItem({ id, type, title, message, link, unread, timeA
       className={`w-full flex items-start gap-3 p-4 rounded-xl border text-left transition-all hover:shadow-md ${
         unread
           ? 'bg-gradient-to-r from-blue-50 to-white border-blue-200 hover:from-blue-100'
-          : 'bg-white border-gray-200 hover:bg-gray-50'
+          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
       }`}
     >
       <div className={`p-2 rounded-lg ${color} mt-0.5`}>
@@ -49,13 +49,13 @@ export function NotificationItem({ id, type, title, message, link, unread, timeA
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className={`text-sm ${unread ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>
+          <p className={`text-sm ${unread ? 'font-semibold text-gray-900 dark:text-gray-100' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
             {title}
           </p>
           {unread && <span className="w-2 h-2 rounded-full bg-blue-500" />}
         </div>
-        <p className="text-sm text-gray-600 mt-0.5">{message}</p>
-        <p className="text-xs text-gray-400 mt-1">{timeAgo}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{message}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{timeAgo}</p>
       </div>
     </button>
   )

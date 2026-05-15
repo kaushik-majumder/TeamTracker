@@ -88,7 +88,7 @@ export default async function WorkflowsPage() {
       APPROVED: 'bg-green-100 text-green-700',
       REJECTED: 'bg-red-100 text-red-700',
     }
-    return map[status] ?? 'bg-gray-100 text-gray-600'
+    return map[status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
   }
 
   // Card chrome tint based on status — left border + soft gradient bg
@@ -101,21 +101,21 @@ export default async function WorkflowsPage() {
       case 'REJECTED':
         return 'border-l-4 border-l-rose-400 bg-gradient-to-r from-rose-50/40 to-white'
       default:
-        return 'border-l-4 border-l-gray-300 bg-white'
+        return 'border-l-4 border-l-gray-300 bg-white dark:bg-gray-900'
     }
   }
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-gray-900 mb-6">Workflows</h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Workflows</h1>
 
       {/* Promotions */}
       <section className="mb-8">
-        <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">
+        <h2 className="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase tracking-wide mb-3">
           Promotion Requests
         </h2>
         {promotions.length === 0 ? (
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-500">
             No promotion requests yet.
           </div>
         ) : (
@@ -130,24 +130,24 @@ export default async function WorkflowsPage() {
               const isMine = req.recommendedBy === session.userId
 
               return (
-                <div key={req.id} className={`rounded-xl border border-gray-200 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
+                <div key={req.id} className={`rounded-xl border border-gray-200 dark:border-gray-800 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-gray-900">{subjectName}</span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{subjectName}</span>
+                        <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full">
                           {subjectKind === 'leader' ? 'Leadership' : 'Team Member'}
                         </span>
-                        <span className="text-gray-400">·</span>
-                        <span className="text-sm text-gray-500">{req.team.name}</span>
+                        <span className="text-gray-400 dark:text-gray-500">·</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{req.team.name}</span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {req.currentTitle} → <strong>{req.proposedTitle}</strong>
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                         Recommended by {isMine ? 'you' : req.recommender?.name ?? 'Former user'} · {format(req.createdAt, 'MMM d, yyyy')}
                       </p>
-                      <p className="text-sm text-gray-600 mt-2 italic">&quot;{req.justification}&quot;</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">&quot;{req.justification}&quot;</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${statusBadge(req.status)}`}>
                       {req.status}
@@ -155,7 +155,7 @@ export default async function WorkflowsPage() {
                   </div>
 
                   {req.reviewNote && (
-                    <p className="text-xs text-gray-500 mt-3 border-t border-gray-100 pt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 border-t border-gray-100 dark:border-gray-800 pt-2">
                       Review note: {req.reviewNote}
                       {req.reviewer && ` (${req.reviewer.name})`}
                     </p>
@@ -163,7 +163,7 @@ export default async function WorkflowsPage() {
 
                   {showReview && <ReviewForm requestId={req.id} type="promotion" />}
                   {req.status === 'PENDING' && !showReview && isMine && (
-                    <p className="text-xs text-gray-400 mt-3 border-t border-gray-100 pt-2">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 border-t border-gray-100 dark:border-gray-800 pt-2">
                       Waiting for review by higher leadership.
                     </p>
                   )}
@@ -176,11 +176,11 @@ export default async function WorkflowsPage() {
 
       {/* Salary Hikes */}
       <section>
-        <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">
+        <h2 className="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase tracking-wide mb-3">
           Salary Hike Requests
         </h2>
         {salaryHikes.length === 0 ? (
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-500">
             No salary hike requests yet.
           </div>
         ) : (
@@ -196,26 +196,26 @@ export default async function WorkflowsPage() {
               const isMine = req.recommendedBy === session.userId
 
               return (
-                <div key={req.id} className={`rounded-xl border border-gray-200 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
+                <div key={req.id} className={`rounded-xl border border-gray-200 dark:border-gray-800 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-gray-900">{subjectName}</span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{subjectName}</span>
+                        <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full">
                           {subjectKind === 'leader' ? 'Leadership' : 'Team Member'}
                         </span>
-                        <span className="text-gray-400">·</span>
-                        <span className="text-sm text-gray-500">{req.team.name}</span>
+                        <span className="text-gray-400 dark:text-gray-500">·</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{req.team.name}</span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         ${req.currentSalary.toLocaleString()} →{' '}
                         <strong>${req.proposedSalary.toLocaleString()}</strong>
-                        <span className="text-gray-400 ml-1 text-xs">(+{pct}%)</span>
+                        <span className="text-gray-400 dark:text-gray-500 ml-1 text-xs">(+{pct}%)</span>
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                         Recommended by {isMine ? 'you' : req.recommender?.name ?? 'Former user'} · {format(req.createdAt, 'MMM d, yyyy')}
                       </p>
-                      <p className="text-sm text-gray-600 mt-2 italic">&quot;{req.justification}&quot;</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">&quot;{req.justification}&quot;</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${statusBadge(req.status)}`}>
                       {req.status}
@@ -223,7 +223,7 @@ export default async function WorkflowsPage() {
                   </div>
 
                   {req.reviewNote && (
-                    <p className="text-xs text-gray-500 mt-3 border-t border-gray-100 pt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 border-t border-gray-100 dark:border-gray-800 pt-2">
                       Review note: {req.reviewNote}
                       {req.reviewer && ` (${req.reviewer.name})`}
                     </p>
@@ -231,7 +231,7 @@ export default async function WorkflowsPage() {
 
                   {showReview && <ReviewForm requestId={req.id} type="salary" />}
                   {req.status === 'PENDING' && !showReview && isMine && (
-                    <p className="text-xs text-gray-400 mt-3 border-t border-gray-100 pt-2">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 border-t border-gray-100 dark:border-gray-800 pt-2">
                       Waiting for review by higher leadership.
                     </p>
                   )}

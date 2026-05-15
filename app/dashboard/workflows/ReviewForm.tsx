@@ -9,12 +9,12 @@ export function ReviewForm({ requestId, type }: Props) {
   const [, formAction, pending] = useActionState(action, undefined)
 
   return (
-    <form action={formAction} className="mt-4 pt-4 border-t border-gray-100 space-y-2">
+    <form action={formAction} className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
       <input type="hidden" name="requestId" value={requestId} />
       <textarea
         name="reviewNote"
         rows={2}
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         placeholder="Optional review note…"
       />
       <div className="flex gap-2">

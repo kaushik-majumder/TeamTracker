@@ -55,19 +55,19 @@ export function CreateUserForm({ teams }: Props) {
   return (
     <form action={action} className="space-y-3" key={s?.success ? 'reset' : 'form'}>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Name</label>
         <input name="name" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jane Doe" />
         {s?.errors?.name && <p className="text-xs text-red-500 mt-1">{s.errors.name[0]}</p>}
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
         <input name="email" type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="jane@company.com" />
         {s?.errors?.email && <p className="text-xs text-red-500 mt-1">{s.errors.email[0]}</p>}
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Role</label>
         <select
           name="role"
           value={role}
@@ -79,7 +79,7 @@ export function CreateUserForm({ teams }: Props) {
           <option value="TEAM_LEAD">Team Lead</option>
           <option value="TEAM_MEMBER">Team Member</option>
         </select>
-        <p className="text-[11px] text-gray-400 mt-1">
+        <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
           {isMember
             ? 'Team members do not log in — they are tracked records only.'
             : isMD
@@ -94,7 +94,7 @@ export function CreateUserForm({ teams }: Props) {
       {isMember && (
         <>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Designation</label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Designation</label>
             <input
               name="designation"
               list="designation-options"
@@ -107,7 +107,7 @@ export function CreateUserForm({ teams }: Props) {
             {s?.errors?.designation && <p className="text-xs text-red-500 mt-1">{s.errors.designation[0]}</p>}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Join Date</label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Join Date</label>
             <input name="joinDate" type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             {s?.errors?.joinDate && <p className="text-xs text-red-500 mt-1">{s.errors.joinDate[0]}</p>}
           </div>
@@ -123,19 +123,19 @@ export function CreateUserForm({ teams }: Props) {
 
       {/* Team assignment — skipped entirely for MDs */}
       {!isMD && (
-        <div className="pt-3 border-t border-gray-100">
+        <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
           {isManager ? (
             <>
-              <label className="block text-xs font-medium text-gray-600 mb-2">
-                Assign to Teams <span className="text-gray-400 font-normal">(pick any number)</span>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                Assign to Teams <span className="text-gray-400 dark:text-gray-500 font-normal">(pick any number)</span>
               </label>
 
               {teams.length === 0 ? (
-                <p className="text-xs text-gray-500 mb-2">No teams exist yet — create one below.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">No teams exist yet — create one below.</p>
               ) : (
-                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1 mb-3">
+                <div className="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded-lg p-2 space-y-1 mb-3">
                   {teams.map((t) => (
-                    <label key={t.id} className="flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded hover:bg-gray-50">
+                    <label key={t.id} className="flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50">
                       <input
                         type="checkbox"
                         name="selectedTeamIds"
@@ -144,7 +144,7 @@ export function CreateUserForm({ teams }: Props) {
                         onChange={() => toggleTeam(t.id)}
                         className="text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700">{t.name}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t.name}</span>
                     </label>
                   ))}
                 </div>
@@ -157,7 +157,7 @@ export function CreateUserForm({ teams }: Props) {
                   onChange={(e) => setAddNewTeam(e.target.checked)}
                   className="text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-gray-700">Also create a new team</span>
+                <span className="text-gray-700 dark:text-gray-300">Also create a new team</span>
               </label>
 
               {addNewTeam && (
@@ -178,7 +178,7 @@ export function CreateUserForm({ teams }: Props) {
               )}
 
               {selectedTeamIds.length === 0 && !addNewTeam && (
-                <p className="text-[11px] text-gray-400 mt-2">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
                   No teams selected — user can be assigned later from Manage Teams.
                 </p>
               )}
@@ -186,7 +186,7 @@ export function CreateUserForm({ teams }: Props) {
           ) : (
             /* TEAM_LEAD / TEAM_MEMBER single-team flow */
             <>
-              <label className="block text-xs font-medium text-gray-600 mb-2">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                 Team Assignment {isMember && <span className="text-red-500">*</span>}
               </label>
               <input type="hidden" name="teamMode" value={teamMode} />
@@ -202,7 +202,7 @@ export function CreateUserForm({ teams }: Props) {
                         onChange={() => setTeamMode(mode)}
                         className="text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700">
+                      <span className="text-gray-700 dark:text-gray-300">
                         {mode === 'none' && 'Skip — assign later'}
                         {mode === 'existing' && 'Assign to existing team'}
                         {mode === 'new' && 'Create a new team'}

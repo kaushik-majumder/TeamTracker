@@ -41,7 +41,7 @@ export function CycleActions({ cycleId, status }: { cycleId: string; status: Cyc
             }
           }}
           disabled={pending}
-          className="flex items-center gap-1.5 text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
         >
           <Lock size={14} /> {pending ? 'Closing…' : 'Close Cycle'}
         </button>
@@ -64,7 +64,7 @@ export function CycleActions({ cycleId, status }: { cycleId: string; status: Cyc
         </button>
       )}
 
-      {message && <span className="text-xs text-gray-500 self-center">{message}</span>}
+      {message && <span className="text-xs text-gray-500 dark:text-gray-400 self-center">{message}</span>}
     </div>
   )
 }

@@ -20,8 +20,8 @@ export default async function NotificationsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notifications</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {unreadCount > 0 ? `${unreadCount} unread` : 'You are all caught up'}
           </p>
         </div>
@@ -30,10 +30,10 @@ export default async function NotificationsPage() {
 
       {notifications.length === 0 ? (
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-12 text-center">
-          <div className="inline-flex p-3 rounded-2xl bg-white shadow-sm mb-3">
+          <div className="inline-flex p-3 rounded-2xl bg-white dark:bg-gray-900 shadow-sm mb-3">
             <Bell size={32} className="text-blue-400" />
           </div>
-          <p className="text-gray-600 text-sm">No notifications yet.</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">No notifications yet.</p>
         </div>
       ) : (
         <div className="space-y-2">

@@ -20,7 +20,7 @@ export function EmployeeStatusButton({ employeeId, status }: Props) {
           }
         }}
         disabled={pending}
-        className="flex items-center gap-1.5 text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
       >
         <UserCheck size={14} />
         Reactivate
@@ -32,7 +32,7 @@ export function EmployeeStatusButton({ employeeId, status }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-sm bg-white border border-gray-300 hover:bg-red-50 hover:border-red-200 hover:text-red-700 text-gray-700 font-medium px-3 py-2 rounded-lg transition-colors"
+        className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-red-50 hover:border-red-200 hover:text-red-700 text-gray-700 dark:text-gray-300 font-medium px-3 py-2 rounded-lg transition-colors"
       >
         <UserMinus size={14} />
         Mark as Left
@@ -40,16 +40,16 @@ export function EmployeeStatusButton({ employeeId, status }: Props) {
 
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Mark Employee as Left</h3>
-              <button onClick={() => setOpen(false)}><X size={18} className="text-gray-400" /></button>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">Mark Employee as Left</h3>
+              <button onClick={() => setOpen(false)}><X size={18} className="text-gray-400 dark:text-gray-500" /></button>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Their data will remain for reference, but they won&apos;t receive anniversary emails or appear in pending workflows.
             </p>
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Last Working Day</label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Last Working Day</label>
               <input
                 type="date"
                 value={leftDate}
@@ -60,7 +60,7 @@ export function EmployeeStatusButton({ employeeId, status }: Props) {
             <div className="flex gap-2">
               <button
                 onClick={() => setOpen(false)}
-                className="flex-1 text-sm border border-gray-300 text-gray-600 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 text-sm border border-gray-300 text-gray-600 dark:text-gray-400 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors"
               >
                 Cancel
               </button>

@@ -1,6 +1,5 @@
 import { requireAuth } from '@/lib/auth'
-import { Sidebar } from '@/components/Sidebar'
-import { TopBar } from '@/components/TopBar'
+import { DashboardShell } from '@/components/DashboardShell'
 import { prisma } from '@/lib/db'
 import { approverRoleFor } from '@/lib/hierarchy'
 import { Role } from '@prisma/client'
@@ -90,20 +89,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ])
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar
-        name={session.name}
-        role={session.role}
-        pendingWorkflows={pendingReviewable}
-        unreadNotifications={unreadNotifs}
-        pendingReviews={pendingReviews}
-      />
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <TopBar name={session.name} email={session.email} imageUrl={userProfile?.profileImageUrl} />
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>
-        </div>
-      </main>
-    </div>
+    <DashboardShell
+      session={{ name: session.name, email: session.email, role: session.role }}
+      profileImageUrl={userProfile?.profileImageUrl ?? null}
+      pendingWorkflows={pendingReviewable}
+      unreadNotifications={unreadNotifs}
+      pendingReviews={pendingReviews}
+    >
+      {children}
+    </DashboardShell>
   )
 }
