@@ -38,14 +38,14 @@ export function ReportsToSelect({ userId, currentReportsToId, candidates }: Prop
         value={value}
         onChange={handleChange}
         disabled={pending || candidates.length === 0}
-        className="text-sm px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 min-w-[200px]"
+        className="text-sm px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 min-w-[200px]"
       >
         <option value="">— No supervisor —</option>
         {candidates.map((c) => (
           <option key={c.id} value={c.id}>{c.label}</option>
         ))}
       </select>
-      {pending && <span className="text-xs text-gray-400">Saving…</span>}
+      {pending && <span className="text-xs text-gray-400 dark:text-gray-400">Saving…</span>}
       {flash === 'saved' && !pending && <span className="text-xs text-green-600">✓ Saved</span>}
       {s?.message && !pending && <span className="text-xs text-red-500">{s.message}</span>}
     </form>

@@ -13,7 +13,7 @@ export function RemoveAccessButton({ teamId, userId }: { teamId: string; userId:
         }
       }}
       disabled={pending}
-      className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50"
+      className="text-gray-400 dark:text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50"
       title="Remove"
     >
       <X size={14} />

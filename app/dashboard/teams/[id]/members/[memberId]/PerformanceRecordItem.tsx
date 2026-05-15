@@ -32,13 +32,13 @@ export function PerformanceRecordItem({ id, period, rating, notes, authorName, c
   const [pending, startTransition] = useTransition()
 
   return (
-    <div className="border-t border-gray-100 pt-3">
+    <div className="border-t border-gray-100 dark:border-gray-800 pt-3">
       <div className="flex items-start justify-between gap-2 mb-1">
-        <span className="text-sm font-medium text-gray-700">{period}</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{period}</span>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} className={i < rating ? 'text-amber-400' : 'text-gray-200'}>★</span>
+              <span key={i} className={i < rating ? 'text-amber-400' : 'text-gray-200 dark:text-gray-700'}>★</span>
             ))}
           </div>
           <button
@@ -49,14 +49,14 @@ export function PerformanceRecordItem({ id, period, rating, notes, authorName, c
             }}
             disabled={pending}
             title="Delete record"
-            className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50"
+            className="text-gray-400 dark:text-gray-500 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
           >
             <Trash2 size={14} />
           </button>
         </div>
       </div>
 
-      <p className="text-sm text-gray-600">{notes}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{notes}</p>
 
       {attachments.length > 0 && (
         <ul className="mt-2 space-y-1">
@@ -65,20 +65,20 @@ export function PerformanceRecordItem({ id, period, rating, notes, authorName, c
               <a
                 href={a.dataUrl}
                 download={a.filename}
-                className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors max-w-full"
+                className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 px-2 py-1 rounded-lg transition-colors max-w-full"
                 title={a.filename}
               >
                 <Paperclip size={12} className="shrink-0" />
                 <span className="truncate">{a.filename}</span>
-                <span className="text-gray-400 shrink-0">{formatBytes(a.sizeBytes)}</span>
-                <Download size={12} className="shrink-0 text-gray-400" />
+                <span className="text-gray-400 dark:text-gray-500 shrink-0">{formatBytes(a.sizeBytes)}</span>
+                <Download size={12} className="shrink-0 text-gray-400 dark:text-gray-500" />
               </a>
             </li>
           ))}
         </ul>
       )}
 
-      <p className="text-xs text-gray-400 mt-1">
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
         by {authorName} · {format(createdAt, 'MMM d, yyyy')}
       </p>
     </div>

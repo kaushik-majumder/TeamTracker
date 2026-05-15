@@ -19,7 +19,7 @@ export function DeletePersonButton({ id, name, kind }: Props) {
         }
       }}
       disabled={pending}
-      className="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
+      className="text-gray-400 dark:text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
       title={`Delete ${label}`}
     >
       <Trash2 size={16} />
