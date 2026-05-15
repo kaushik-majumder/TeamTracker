@@ -72,13 +72,13 @@ export default async function DashboardPage() {
         { label: 'Users', value: userCount, icon: UserPlus, href: '/dashboard/admin/users', color: 'purple' },
         { label: 'Teams', value: teams.length, icon: Building2, href: '/dashboard/admin/teams', color: 'blue' },
         { label: 'Pending Promotions', value: pendingPromotions, icon: TrendingUp, href: '/dashboard/workflows', color: 'amber' },
-        { label: 'Anniversaries This Month', value: upcomingAnniversaries, icon: Calendar, href: '/dashboard/teams', color: 'green' },
+        { label: 'Anniversaries This Month', value: upcomingAnniversaries, icon: Calendar, href: '/dashboard/anniversaries', color: 'green' },
       ]
     : [
         { label: 'Teams', value: teams.length, icon: Users, href: '/dashboard/teams', color: 'blue' },
         { label: 'Pending Promotions', value: pendingPromotions, icon: TrendingUp, href: '/dashboard/workflows', color: 'amber' },
         { label: 'Pending Salary Hikes', value: pendingSalaryHikes, icon: GitBranch, href: '/dashboard/workflows', color: 'purple' },
-        { label: 'Anniversaries This Month', value: upcomingAnniversaries, icon: Calendar, href: '/dashboard/teams', color: 'green' },
+        { label: 'Anniversaries This Month', value: upcomingAnniversaries, icon: Calendar, href: '/dashboard/anniversaries', color: 'green' },
       ]
 
   return (
