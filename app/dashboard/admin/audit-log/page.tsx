@@ -12,7 +12,7 @@ const ACTION_COLOR: Record<string, string> = {
   grant: 'bg-emerald-100 text-emerald-700',
   revoke: 'bg-amber-100 text-amber-700',
   open: 'bg-blue-100 text-blue-700',
-  close: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+  close: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
   submit: 'bg-indigo-100 text-indigo-700',
   review: 'bg-purple-100 text-purple-700',
   markLeft: 'bg-amber-100 text-amber-700',
@@ -20,13 +20,13 @@ const ACTION_COLOR: Record<string, string> = {
   set: 'bg-blue-100 text-blue-700',
   resync: 'bg-blue-100 text-blue-700',
   add: 'bg-green-100 text-green-700',
-  save: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+  save: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
   setup: 'bg-emerald-100 text-emerald-700',
 }
 
 function colorForAction(action: string) {
   const verb = action.split('.').pop() ?? ''
-  return ACTION_COLOR[verb] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+  return ACTION_COLOR[verb] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
 }
 
 export default async function AuditLogPage({
@@ -74,7 +74,7 @@ export default async function AuditLogPage({
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Audit Log</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           Every state-changing action recorded by the system. Useful for compliance and debugging.
         </p>
       </div>
@@ -82,12 +82,12 @@ export default async function AuditLogPage({
       {/* Filters */}
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 mb-6 flex flex-wrap items-end gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Category</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Category</label>
           <div className="flex flex-wrap gap-1">
             <Link
               href={linkFor({ action: '', page: '1' })}
               className={`text-xs px-3 py-1.5 rounded-lg border ${
-                !actionFilter ? 'bg-gray-900 text-white border-gray-900' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+                !actionFilter ? 'bg-gray-900 text-white border-gray-900' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
               }`}
             >
               All
@@ -97,7 +97,7 @@ export default async function AuditLogPage({
                 key={p}
                 href={linkFor({ action: p, page: '1' })}
                 className={`text-xs px-3 py-1.5 rounded-lg border ${
-                  actionFilter === p ? 'bg-gray-900 text-white border-gray-900' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+                  actionFilter === p ? 'bg-gray-900 text-white border-gray-900' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
                 }`}
               >
                 {p}
@@ -107,24 +107,24 @@ export default async function AuditLogPage({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Actor</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Actor</label>
           <ActorFilter users={users} current={actorFilter} />
         </div>
 
-        <div className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+        <div className="text-xs text-gray-500 dark:text-gray-300 ml-auto">
           {total.toLocaleString()} {total === 1 ? 'entry' : 'entries'}
         </div>
       </div>
 
       {/* Table */}
       {logs.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-12 text-center text-sm text-gray-400 dark:text-gray-500">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-12 text-center text-sm text-gray-400 dark:text-gray-400">
           No audit entries match the filters.
         </div>
       ) : (
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden"><div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 text-xs uppercase text-gray-500 dark:text-gray-400">
+            <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 text-xs uppercase text-gray-500 dark:text-gray-300">
               <tr>
                 <th className="px-4 py-2.5 text-left">When</th>
                 <th className="px-4 py-2.5 text-left">Actor</th>
@@ -136,14 +136,14 @@ export default async function AuditLogPage({
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {logs.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50">
-                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400 whitespace-nowrap text-xs">
+                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-300 whitespace-nowrap text-xs">
                     {format(log.createdAt, 'MMM d, HH:mm:ss')}
                   </td>
                   <td className="px-4 py-2.5">
                     {log.actor ? (
                       <span className="text-gray-800 dark:text-gray-200 font-medium">{log.actor.name}</span>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500 italic">system / deleted</span>
+                      <span className="text-gray-400 dark:text-gray-400 italic">system / deleted</span>
                     )}
                   </td>
                   <td className="px-4 py-2.5">
@@ -151,19 +151,19 @@ export default async function AuditLogPage({
                       {log.action}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400 text-xs">
+                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-300 text-xs">
                     {log.entityType ? (
                       <>
                         <span className="text-gray-800 dark:text-gray-200">{log.entityType}</span>
-                        {log.entityId && <span className="text-gray-400 dark:text-gray-500 ml-1">{log.entityId.slice(0, 8)}</span>}
+                        {log.entityId && <span className="text-gray-400 dark:text-gray-400 ml-1">{log.entityId.slice(0, 8)}</span>}
                       </>
                     ) : (
                       <span className="text-gray-300">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400 text-xs max-w-md">
+                  <td className="px-4 py-2.5 text-gray-600 dark:text-gray-300 text-xs max-w-md">
                     {log.details ? (
-                      <code className="text-[11px] text-gray-500 dark:text-gray-400 break-all line-clamp-2">
+                      <code className="text-[11px] text-gray-500 dark:text-gray-300 break-all line-clamp-2">
                         {JSON.stringify(log.details)}
                       </code>
                     ) : (
@@ -180,14 +180,14 @@ export default async function AuditLogPage({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 text-sm">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-300">
             Page {pageNum} of {totalPages}
           </p>
           <div className="flex gap-2">
             {pageNum > 1 && (
               <Link
                 href={linkFor({ page: (pageNum - 1).toString() })}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50"
               >
                 ← Previous
               </Link>
@@ -195,7 +195,7 @@ export default async function AuditLogPage({
             {pageNum < totalPages && (
               <Link
                 href={linkFor({ page: (pageNum + 1).toString() })}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50"
               >
                 Next →
               </Link>

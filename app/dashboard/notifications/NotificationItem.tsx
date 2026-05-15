@@ -26,7 +26,7 @@ const iconFor: Record<NotificationType, { icon: typeof TrendingUp; color: string
 export function NotificationItem({ id, type, title, message, link, unread, timeAgo }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const { icon: Icon, color } = iconFor[type] ?? { icon: TrendingUp, color: 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50' }
+  const { icon: Icon, color } = iconFor[type] ?? { icon: TrendingUp, color: 'text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/50' }
 
   const handleClick = () => {
     if (unread) {
@@ -49,13 +49,13 @@ export function NotificationItem({ id, type, title, message, link, unread, timeA
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className={`text-sm ${unread ? 'font-semibold text-gray-900 dark:text-gray-100' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
+          <p className={`text-sm ${unread ? 'font-semibold text-gray-900 dark:text-gray-100' : 'font-medium text-gray-700 dark:text-gray-200'}`}>
             {title}
           </p>
           {unread && <span className="w-2 h-2 rounded-full bg-blue-500" />}
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{message}</p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{timeAgo}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">{message}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">{timeAgo}</p>
       </div>
     </button>
   )

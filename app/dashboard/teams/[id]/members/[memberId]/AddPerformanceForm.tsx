@@ -45,7 +45,7 @@ export function AddPerformanceForm({ employeeId }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Period</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Period</label>
           <input
             name="period"
             className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -53,7 +53,7 @@ export function AddPerformanceForm({ employeeId }: Props) {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Rating (1–5)</label>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Rating (1–5)</label>
           <select
             name="rating"
             className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -66,7 +66,7 @@ export function AddPerformanceForm({ employeeId }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Notes</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Notes</label>
         <textarea
           name="notes"
           rows={2}
@@ -77,20 +77,20 @@ export function AddPerformanceForm({ employeeId }: Props) {
 
       {/* Attachments */}
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-          Attachments <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, max 3MB each)</span>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+          Attachments <span className="text-gray-400 dark:text-gray-400 font-normal">(optional, max 3MB each)</span>
         </label>
 
         {files.length > 0 && (
           <ul className="space-y-1 mb-2">
             {files.map((f, i) => (
               <li key={i} className="flex items-center justify-between text-xs bg-gray-50 dark:bg-gray-800/50 rounded-lg px-2 py-1.5">
-                <span className="truncate flex-1 text-gray-700 dark:text-gray-300">{f.name}</span>
-                <span className="text-gray-400 dark:text-gray-500 ml-2">{formatBytes(f.size)}</span>
+                <span className="truncate flex-1 text-gray-700 dark:text-gray-200">{f.name}</span>
+                <span className="text-gray-400 dark:text-gray-400 ml-2">{formatBytes(f.size)}</span>
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="ml-2 text-gray-400 dark:text-gray-500 hover:text-red-600"
+                  className="ml-2 text-gray-400 dark:text-gray-400 hover:text-red-600"
                   aria-label={`Remove ${f.name}`}
                 >
                   <X size={12} />
@@ -100,7 +100,7 @@ export function AddPerformanceForm({ employeeId }: Props) {
           </ul>
         )}
 
-        <label className="inline-flex items-center gap-1.5 text-xs bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 font-medium px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors">
+        <label className="inline-flex items-center gap-1.5 text-xs bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-200 font-medium px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors">
           <Paperclip size={12} />
           {files.length === 0 ? 'Add files' : 'Add more'}
           <input

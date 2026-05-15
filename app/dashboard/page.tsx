@@ -85,7 +85,7 @@ export default async function DashboardPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome back, {session.name.split(' ')[0]}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           {
             isAdmin
               ? 'Admin view'
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 <Icon size={18} />
               </div>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{label}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-300 mt-0.5">{label}</p>
             </Link>
           )
         })}
@@ -129,7 +129,7 @@ export default async function DashboardPage() {
             </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100">Create User</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Add a manager or team lead and optionally assign them to a team in one step.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Add a manager or team lead and optionally assign them to a team in one step.</p>
             </div>
           </Link>
           <Link
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
             </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100">Manage Teams</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Create teams and assign which managers and leads can see them.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Create teams and assign which managers and leads can see them.</p>
             </div>
           </Link>
         </div>
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
           )}
         </div>
         {teams.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 text-center text-gray-500 dark:text-gray-300 text-sm">
             {isAdmin ? (
               <>
                 No teams yet.{' '}
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
                   <div className="pl-2">
                     <p className="font-medium text-gray-900 dark:text-gray-100">{team.name}</p>
                     {team.description && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">{team.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-300 mt-1 truncate">{team.description}</p>
                     )}
                     <div className="flex items-center gap-1.5 mt-3">
                       <Users size={12} className={c.text} />

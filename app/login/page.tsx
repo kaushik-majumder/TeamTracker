@@ -14,12 +14,12 @@ export default function LoginPage() {
               T
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">TeamTracker</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Sign in to your account</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Sign in to your account</p>
           </div>
 
           <form action={action} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Email
               </label>
               <input
@@ -36,7 +36,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Password
               </label>
               <input

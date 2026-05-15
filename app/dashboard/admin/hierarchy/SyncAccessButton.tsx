@@ -24,7 +24,7 @@ export function SyncAccessButton() {
           })
         }}
         disabled={pending}
-        className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
       >
         <RefreshCw size={14} className={pending ? 'animate-spin' : ''} />
         {pending ? 'Syncing…' : 'Sync access from hierarchy'}

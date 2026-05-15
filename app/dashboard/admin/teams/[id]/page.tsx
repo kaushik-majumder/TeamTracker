@@ -32,12 +32,12 @@ export default async function AdminTeamDetailPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href="/dashboard/admin/teams" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300">← All Teams</Link>
+        <Link href="/dashboard/admin/teams" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-200">← All Teams</Link>
         <div className="flex items-start justify-between mt-2">
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{team.name}</h1>
-            {team.description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{team.description}</p>}
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{team._count.employees} employees</p>
+            {team.description && <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{team.description}</p>}
+            <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">{team._count.employees} employees</p>
           </div>
           <DeleteTeamButton teamId={team.id} name={team.name} />
         </div>
@@ -48,18 +48,18 @@ export default async function AdminTeamDetailPage({
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
           <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Assigned Users</h2>
           {team.teamAccess.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No users assigned yet.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400">No users assigned yet.</p>
           ) : (
             <div className="space-y-2">
               {team.teamAccess.map((access) => (
                 <div key={access.id} className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-2 last:border-0">
                   <div>
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{access.user.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{access.user.email}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">{access.user.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      access.role === 'MANAGER' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                      access.role === 'MANAGER' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200'
                     }`}>
                       {access.role === 'MANAGER' ? 'Manager' : 'Team Lead'}
                     </span>
@@ -75,7 +75,7 @@ export default async function AdminTeamDetailPage({
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
           <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Assign User</h2>
           {availableUsers.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">
+            <p className="text-sm text-gray-400 dark:text-gray-400">
               No more users available to assign.{' '}
               <Link href="/dashboard/admin/users" className="text-blue-600 hover:underline">
                 Create one

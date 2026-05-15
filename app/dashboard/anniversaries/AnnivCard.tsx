@@ -37,7 +37,7 @@ export function AnnivCard(props: Props) {
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">{props.name}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{props.title}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300 truncate">{props.title}</p>
           </div>
           <div className="text-right shrink-0">
             <p
@@ -47,13 +47,13 @@ export function AnnivCard(props: Props) {
             >
               {props.years}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 -mt-0.5">
+            <p className="text-xs text-gray-500 dark:text-gray-300 -mt-0.5">
               {props.years === 1 ? 'year' : 'years'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-300 flex-wrap">
           <span className={`${c.soft} ${c.text} px-2 py-0.5 rounded-full font-medium`}>
             {props.teamName}
           </span>

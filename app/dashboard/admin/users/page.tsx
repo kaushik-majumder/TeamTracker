@@ -21,7 +21,7 @@ export default async function AdminUsersPage() {
     ADMIN: 'bg-purple-100 text-purple-700',
     MANAGING_DIRECTOR: 'bg-indigo-100 text-indigo-700',
     MANAGER: 'bg-blue-100 text-blue-700',
-    TEAM_LEAD: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+    TEAM_LEAD: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
     TEAM_MEMBER: 'bg-emerald-100 text-emerald-700',
   }
 
@@ -37,7 +37,7 @@ export default async function AdminUsersPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Manage People</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           Create managers, team leads, or team members. Optionally assign to a team in the same step.
         </p>
       </div>
@@ -45,7 +45,7 @@ export default async function AdminUsersPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-3">
           {/* Users (Admin / Manager / Team Lead) */}
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mt-2">
             Users · {users.length}
           </p>
           {users.map((u) => (
@@ -57,11 +57,11 @@ export default async function AdminUsersPage() {
                     {roleLabel[u.role]}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{u.email}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">{u.email}</p>
                 {u.teamAccess.length > 0 && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Teams: {u.teamAccess.map((a) => a.team.name).join(', ')}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">Teams: {u.teamAccess.map((a) => a.team.name).join(', ')}</p>
                 )}
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Joined {format(u.createdAt, 'MMM d, yyyy')}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">Joined {format(u.createdAt, 'MMM d, yyyy')}</p>
               </div>
               {u.role !== 'ADMIN' && (
                 <div className="flex items-center gap-1">
@@ -73,11 +73,11 @@ export default async function AdminUsersPage() {
           ))}
 
           {/* Team members */}
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-6">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mt-6">
             Team Members · {employees.length}
           </p>
           {employees.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No team members yet.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400">No team members yet.</p>
           ) : (
             employees.map((e) => (
               <div key={e.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between">
@@ -88,11 +88,11 @@ export default async function AdminUsersPage() {
                       Team Member
                     </span>
                     {e.status === 'LEFT' && (
-                      <span className="text-xs bg-gray-200 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full">Former</span>
+                      <span className="text-xs bg-gray-200 text-gray-700 dark:text-gray-200 px-2 py-0.5 rounded-full">Former</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{e.title} · {e.email}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-300">{e.title} · {e.email}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">
                     Team: {e.team.name} · Joined {format(e.joinDate, 'MMM d, yyyy')}
                   </p>
                 </div>

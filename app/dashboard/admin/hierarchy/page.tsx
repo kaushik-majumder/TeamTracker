@@ -29,7 +29,7 @@ export default async function HierarchyPage() {
     ADMIN: 'bg-purple-100 text-purple-700',
     MANAGING_DIRECTOR: 'bg-indigo-100 text-indigo-700',
     MANAGER: 'bg-blue-100 text-blue-700',
-    TEAM_LEAD: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+    TEAM_LEAD: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
   }
 
   return (
@@ -38,7 +38,7 @@ export default async function HierarchyPage() {
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Reporting Hierarchy</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
               Set each user&apos;s direct supervisor. Workflow requests are routed up this chain first.
             </p>
           </div>
@@ -63,7 +63,7 @@ export default async function HierarchyPage() {
 
           return (
             <section key={role}>
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mb-3">
                 {roleLabel[role]} · {byRole[role].length}
               </h2>
               <div className="space-y-2">
@@ -76,11 +76,11 @@ export default async function HierarchyPage() {
                           {roleLabel[u.role].replace(/s$/, '')}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{u.email}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-300 truncate">{u.email}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Reports to:</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-400">Reports to:</span>
                       <ReportsToSelect
                         userId={u.id}
                         currentReportsToId={u.reportsToId}
@@ -99,10 +99,10 @@ export default async function HierarchyPage() {
 
         {byRole.ADMIN.length > 0 && (
           <section>
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mb-3">
               Admins · {byRole.ADMIN.length}
             </h2>
-            <p className="text-sm text-gray-400 dark:text-gray-500">Admins sit at the top of the chain and do not report to anyone in the system.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400">Admins sit at the top of the chain and do not report to anyone in the system.</p>
           </section>
         )}
       </div>

@@ -17,7 +17,7 @@ export default async function AdminCyclesPage() {
   ])
 
   const statusColor = {
-    DRAFT: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+    DRAFT: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
     OPEN: 'bg-blue-100 text-blue-700',
     CLOSED: 'bg-green-100 text-green-700',
   }
@@ -32,7 +32,7 @@ export default async function AdminCyclesPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Review Cycles</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           Run structured performance reviews on a schedule. Create a cycle, open it to assign reviews,
           and close it when done.
         </p>
@@ -41,7 +41,7 @@ export default async function AdminCyclesPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-3">
           {cycles.length === 0 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 text-center text-sm text-gray-400 dark:text-gray-500">
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 text-center text-sm text-gray-400 dark:text-gray-400">
               No review cycles yet. Create your first one →
             </div>
           ) : (
@@ -60,16 +60,16 @@ export default async function AdminCyclesPage() {
                         <span className="font-medium text-gray-900 dark:text-gray-100">{c.name}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor[c.status]}`}>{c.status}</span>
                       </div>
-                      {c.description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{c.description}</p>}
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                      {c.description && <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{c.description}</p>}
+                      <p className="text-xs text-gray-400 dark:text-gray-400 mt-2">
                         {format(c.startDate, 'MMM d')} – {format(c.endDate, 'MMM d, yyyy')} · {scope}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         {completed} / {c._count.reviews}
                       </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">completed</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-400">completed</p>
                     </div>
                   </div>
                 </Link>

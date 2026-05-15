@@ -35,7 +35,7 @@ export default async function TeamsPage() {
           <div className="inline-flex p-3 rounded-2xl bg-white dark:bg-gray-900 shadow-sm mb-3">
             <Users size={32} className="text-blue-400" />
           </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">No teams yet.</p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">No teams yet.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -54,7 +54,7 @@ export default async function TeamsPage() {
                     <div className="min-w-0">
                       <p className="font-semibold text-gray-900 dark:text-gray-100">{team.name}</p>
                       {team.description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{team.description}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{team.description}</p>
                       )}
                     </div>
                     <span className={`text-xs ${c.soft} ${c.text} font-medium px-2 py-1 rounded-full whitespace-nowrap`}>
@@ -62,8 +62,8 @@ export default async function TeamsPage() {
                     </span>
                   </div>
                   {lead && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-                      Lead: <span className="font-medium text-gray-700 dark:text-gray-300">{lead.user.name}</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-4">
+                      Lead: <span className="font-medium text-gray-700 dark:text-gray-200">{lead.user.name}</span>
                     </p>
                   )}
                 </div>

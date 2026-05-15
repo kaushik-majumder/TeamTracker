@@ -59,7 +59,7 @@ export default async function MemberDetailPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href={`/dashboard/teams/${id}`} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300">
+        <Link href={`/dashboard/teams/${id}`} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-200">
           ← {employee.team.name}
         </Link>
         <div className="flex items-start justify-between mt-2 gap-4">
@@ -67,13 +67,13 @@ export default async function MemberDetailPage({
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{employee.name}</h1>
               {employee.status === 'LEFT' && (
-                <span className="text-xs bg-gray-200 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-gray-200 text-gray-700 dark:text-gray-200 px-2 py-0.5 rounded-full">
                   Former employee
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{employee.title}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-300">{employee.title}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">
               Joined {format(employee.joinDate, 'MMMM d, yyyy')} · {years}y {months}m tenure
               {employee.status === 'LEFT' && employee.leftDate && (
                 <span> · Left {format(employee.leftDate, 'MMM d, yyyy')}</span>
@@ -123,7 +123,7 @@ export default async function MemberDetailPage({
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       r.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
                       r.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-700' :
-                      'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                      'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                     }`}>
                       {r.status.replace('_', ' ')}
                     </span>
@@ -131,23 +131,23 @@ export default async function MemberDetailPage({
                 </div>
                 {r.strengths && (
                   <div className="mt-2">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Strengths</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.strengths}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-300">Strengths</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{r.strengths}</p>
                   </div>
                 )}
                 {r.improvements && (
                   <div className="mt-2">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Areas for Improvement</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.improvements}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-300">Areas for Improvement</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{r.improvements}</p>
                   </div>
                 )}
                 {r.goals && (
                   <div className="mt-2">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Goals</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.goals}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-300">Goals</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{r.goals}</p>
                   </div>
                 )}
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                <p className="text-xs text-gray-400 dark:text-gray-400 mt-2">
                   by {r.reviewer?.name ?? 'Unassigned'} · cycle ends {format(r.cycle.endDate, 'MMM d, yyyy')}
                 </p>
               </div>
@@ -163,7 +163,7 @@ export default async function MemberDetailPage({
           <AddPerformanceForm employeeId={employee.id} teamId={id} />
 
           {employee.performanceRecords.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-4">No records yet.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400 mt-4">No records yet.</p>
           ) : (
             <div className="mt-4 space-y-3">
               {employee.performanceRecords.map((rec) => (
@@ -187,14 +187,14 @@ export default async function MemberDetailPage({
           <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Workflow History</h2>
 
           {employee.promotionRequests.length + employee.salaryRequests.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No workflows yet.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400">No workflows yet.</p>
           ) : (
             <div className="space-y-3">
               {employee.promotionRequests.map((req) => (
                 <div key={req.id} className="flex items-center justify-between text-sm">
                   <div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300">Promotion</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">Promotion</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                       {req.currentTitle} → {req.proposedTitle}
                     </p>
                   </div>
@@ -206,8 +206,8 @@ export default async function MemberDetailPage({
               {employee.salaryRequests.map((req) => (
                 <div key={req.id} className="flex items-center justify-between text-sm">
                   <div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300">Salary Hike</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">Salary Hike</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                       ${req.currentSalary.toLocaleString()} → ${req.proposedSalary.toLocaleString()}
                     </p>
                   </div>

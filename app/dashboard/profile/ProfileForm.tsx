@@ -90,11 +90,11 @@ export function ProfileForm({
       <div className="flex items-start gap-4">
         <Avatar name={name || 'User'} imageUrl={imageUrl} size={80} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">PNG, JPG, or WebP. Resized to 256×256 automatically.</p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Profile Image</p>
+          <p className="text-xs text-gray-500 dark:text-gray-300 mb-3">PNG, JPG, or WebP. Resized to 256×256 automatically.</p>
 
           <div className="flex flex-wrap gap-2">
-            <label className="inline-flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
+            <label className="inline-flex items-center gap-1.5 text-sm bg-white dark:bg-gray-900 border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-200 font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
               <Upload size={14} />
               {imageUrl ? 'Change image' : 'Upload image'}
               <input
@@ -117,7 +117,7 @@ export function ProfileForm({
             )}
           </div>
 
-          {uploading && <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Processing…</p>}
+          {uploading && <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">Processing…</p>}
           {uploadError && <p className="text-xs text-red-500 mt-2">{uploadError}</p>}
         </div>
       </div>
@@ -128,7 +128,7 @@ export function ProfileForm({
       )}
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Name</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Name</label>
         <input
           name="name"
           value={name}
@@ -139,7 +139,7 @@ export function ProfileForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Email</label>
         <input
           name="email"
           type="email"
@@ -150,7 +150,7 @@ export function ProfileForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Gender</label>
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Gender</label>
         <select
           name="gender"
           defaultValue={defaultGender ?? ''}

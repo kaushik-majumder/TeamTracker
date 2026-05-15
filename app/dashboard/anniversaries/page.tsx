@@ -52,7 +52,7 @@ export default async function AnniversariesPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Anniversaries · {monthName}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           {thisMonth.length === 0
             ? 'No anniversaries this month.'
             : `${thisMonth.length} team member${thisMonth.length === 1 ? '' : 's'} celebrating this month.`}
@@ -98,7 +98,7 @@ export default async function AnniversariesPage() {
       {/* Upcoming this month */}
       {upcoming.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mb-3">
             Upcoming · {upcoming.length}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -122,7 +122,7 @@ export default async function AnniversariesPage() {
       {/* Earlier this month */}
       {past.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300 mb-3">
             Earlier this month · {past.length}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -149,7 +149,7 @@ export default async function AnniversariesPage() {
           <div className="inline-flex p-3 rounded-2xl bg-white dark:bg-gray-900 shadow-sm mb-3">
             <Calendar size={32} className="text-blue-400" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
+          <p className="text-gray-600 dark:text-gray-200 text-sm">
             No team members have anniversaries in {monthName}.
           </p>
         </div>
