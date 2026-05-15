@@ -31,7 +31,7 @@ export default async function TeamsPage() {
       </div>
 
       {teams.length === 0 ? (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-12 text-center">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 rounded-xl border border-blue-100 dark:border-blue-900/40 p-12 text-center">
           <div className="inline-flex p-3 rounded-2xl bg-white dark:bg-gray-900 shadow-sm mb-3">
             <Users size={32} className="text-blue-400" />
           </div>

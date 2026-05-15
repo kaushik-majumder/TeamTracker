@@ -115,7 +115,7 @@ export default async function WorkflowsPage() {
           Promotion Requests
         </h2>
         {promotions.length === 0 ? (
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-400">
             No promotion requests yet.
           </div>
         ) : (
@@ -180,7 +180,7 @@ export default async function WorkflowsPage() {
           Salary Hike Requests
         </h2>
         {salaryHikes.length === 0 ? (
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center text-sm text-gray-400 dark:text-gray-400">
             No salary hike requests yet.
           </div>
         ) : (
