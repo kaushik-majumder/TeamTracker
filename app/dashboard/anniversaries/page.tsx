@@ -1,9 +1,8 @@
 import { requireAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import Link from 'next/link'
 import { format, differenceInYears } from 'date-fns'
-import { Calendar, PartyPopper, Mail } from 'lucide-react'
-import { teamColor } from '@/lib/team-color'
+import { Calendar, PartyPopper } from 'lucide-react'
+import { AnnivCard } from './AnnivCard'
 
 export default async function AnniversariesPage() {
   const session = await requireAuth()
@@ -159,65 +158,3 @@ export default async function AnniversariesPage() {
   )
 }
 
-function AnnivCard(props: {
-  name: string
-  email: string
-  title: string
-  teamName: string
-  teamId: string
-  employeeId: string
-  years: number
-  date: Date
-  highlight?: boolean
-  muted?: boolean
-}) {
-  const c = teamColor(props.teamName)
-  return (
-    <Link
-      href={`/dashboard/teams/${props.teamId}/members/${props.employeeId}`}
-      className={`relative group rounded-xl border p-4 transition-all hover:shadow-lg hover:-translate-y-0.5 overflow-hidden ${
-        props.highlight
-          ? 'bg-white dark:bg-gray-900 border-amber-200 dark:border-amber-900/40 shadow-md shadow-amber-500/10'
-          : props.muted
-            ? 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 opacity-80'
-            : `bg-white dark:bg-gray-900 ${c.border} ${c.hoverShadow}`
-      }`}
-    >
-      {!props.muted && !props.highlight && <div className={`absolute left-0 top-0 bottom-0 w-1 ${c.accent}`} />}
-      <div className={!props.muted && !props.highlight ? 'pl-2' : ''}>
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">{props.name}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{props.title}</p>
-          </div>
-          <div className="text-right shrink-0">
-            <p className={`text-2xl font-bold ${props.highlight ? 'text-amber-600 dark:text-amber-400' : 'text-gray-700 dark:text-gray-200'}`}>
-              {props.years}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 -mt-0.5">
-              {props.years === 1 ? 'year' : 'years'}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
-          <span className={`${c.soft} ${c.text} px-2 py-0.5 rounded-full font-medium`}>
-            {props.teamName}
-          </span>
-          <span className="flex items-center gap-1">
-            <Calendar size={12} />
-            {format(props.date, 'MMM d')}
-          </span>
-          <a
-            href={`mailto:${props.email}`}
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200"
-          >
-            <Mail size={12} />
-            {props.email}
-          </a>
-        </div>
-      </div>
-    </Link>
-  )
-}
