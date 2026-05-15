@@ -38,9 +38,9 @@ export function NotificationItem({ id, type, title, message, link, unread, timeA
   return (
     <button
       onClick={handleClick}
-      className={`w-full flex items-start gap-3 p-4 rounded-xl border text-left transition-colors ${
+      className={`w-full flex items-start gap-3 p-4 rounded-xl border text-left transition-all hover:shadow-md ${
         unread
-          ? 'bg-white border-blue-200 hover:bg-blue-50/40'
+          ? 'bg-gradient-to-r from-blue-50 to-white border-blue-200 hover:from-blue-100'
           : 'bg-white border-gray-200 hover:bg-gray-50'
       }`}
     >

@@ -108,7 +108,7 @@ export default async function ReviewsPage() {
       )}
 
       {reviews.length === 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-sm text-gray-400">
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-12 text-center text-sm text-gray-600">
           You have no reviews assigned. When an admin opens a review cycle that includes your team,
           your pending reviews will appear here.
         </div>

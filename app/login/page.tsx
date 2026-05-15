@@ -6,10 +6,13 @@ export default function LoginPage() {
   const [state, action, pending] = useActionState(login, undefined)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-2xl shadow-xl shadow-blue-900/5 border border-gray-100 p-8">
           <div className="mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg mb-3 shadow-md shadow-blue-500/30">
+              T
+            </div>
             <h1 className="text-2xl font-bold text-gray-900">TeamTracker</h1>
             <p className="text-sm text-gray-500 mt-1">Sign in to your account</p>
           </div>

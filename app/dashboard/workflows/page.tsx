@@ -91,6 +91,20 @@ export default async function WorkflowsPage() {
     return map[status] ?? 'bg-gray-100 text-gray-600'
   }
 
+  // Card chrome tint based on status — left border + soft gradient bg
+  const cardTheme = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white'
+      case 'APPROVED':
+        return 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white'
+      case 'REJECTED':
+        return 'border-l-4 border-l-rose-400 bg-gradient-to-r from-rose-50/40 to-white'
+      default:
+        return 'border-l-4 border-l-gray-300 bg-white'
+    }
+  }
+
   return (
     <div>
       <h1 className="text-xl font-bold text-gray-900 mb-6">Workflows</h1>
@@ -101,7 +115,7 @@ export default async function WorkflowsPage() {
           Promotion Requests
         </h2>
         {promotions.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
             No promotion requests yet.
           </div>
         ) : (
@@ -116,7 +130,7 @@ export default async function WorkflowsPage() {
               const isMine = req.recommendedBy === session.userId
 
               return (
-                <div key={req.id} className="bg-white rounded-xl border border-gray-200 p-5">
+                <div key={req.id} className={`rounded-xl border border-gray-200 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
@@ -166,7 +180,7 @@ export default async function WorkflowsPage() {
           Salary Hike Requests
         </h2>
         {salaryHikes.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-6 text-center text-sm text-gray-400">
             No salary hike requests yet.
           </div>
         ) : (
@@ -182,7 +196,7 @@ export default async function WorkflowsPage() {
               const isMine = req.recommendedBy === session.userId
 
               return (
-                <div key={req.id} className="bg-white rounded-xl border border-gray-200 p-5">
+                <div key={req.id} className={`rounded-xl border border-gray-200 p-5 transition-shadow hover:shadow-md ${cardTheme(req.status)}`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">

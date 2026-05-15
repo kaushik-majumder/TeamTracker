@@ -25,6 +25,12 @@ const statusColor: Record<ReviewStatus, string> = {
   COMPLETED: 'bg-green-100 text-green-700',
 }
 
+const cardTheme: Record<ReviewStatus, string> = {
+  NOT_STARTED: 'border-l-4 border-l-gray-300',
+  IN_PROGRESS: 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/40 to-white',
+  COMPLETED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white',
+}
+
 export function ReviewCard(props: Props) {
   const [open, setOpen] = useState(props.canEdit && props.status === 'IN_PROGRESS')
   const [state, action, pending] = useActionState(submitCycleReview, undefined)
@@ -42,7 +48,7 @@ export function ReviewCard(props: Props) {
   }, [s?.success, s?.submitted])
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden transition-shadow hover:shadow-md ${cardTheme[props.status]}`}>
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-start justify-between gap-3 p-5 text-left hover:bg-gray-50 transition-colors"

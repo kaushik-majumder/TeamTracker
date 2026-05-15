@@ -27,9 +27,9 @@ export default async function SetupPasswordPage({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-2xl shadow-xl shadow-blue-900/5 border border-gray-100 p-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900">TeamTracker</h1>
             <p className="text-sm text-gray-500 mt-1">

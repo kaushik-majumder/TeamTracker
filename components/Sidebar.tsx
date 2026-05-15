@@ -39,10 +39,10 @@ export function Sidebar({
   ]
 
   const roleBadge = {
-    ADMIN: { label: 'Admin', cls: 'bg-purple-700 text-purple-100' },
-    MANAGING_DIRECTOR: { label: 'Managing Director', cls: 'bg-indigo-700 text-indigo-100' },
-    MANAGER: { label: 'Manager', cls: 'bg-blue-700 text-blue-100' },
-    TEAM_LEAD: { label: 'Team Lead', cls: 'bg-gray-700 text-gray-100' },
+    ADMIN: { label: 'Admin', cls: 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white' },
+    MANAGING_DIRECTOR: { label: 'Managing Director', cls: 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white' },
+    MANAGER: { label: 'Manager', cls: 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' },
+    TEAM_LEAD: { label: 'Team Lead', cls: 'bg-gradient-to-r from-gray-600 to-slate-600 text-white' },
   }[role]
 
   const linkClass = (href: string, exact = false) => {

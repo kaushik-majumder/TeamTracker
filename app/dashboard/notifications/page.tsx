@@ -29,9 +29,11 @@ export default async function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <Bell size={32} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500 text-sm">No notifications yet.</p>
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-12 text-center">
+          <div className="inline-flex p-3 rounded-2xl bg-white shadow-sm mb-3">
+            <Bell size={32} className="text-blue-400" />
+          </div>
+          <p className="text-gray-600 text-sm">No notifications yet.</p>
         </div>
       ) : (
         <div className="space-y-2">

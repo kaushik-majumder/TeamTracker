@@ -22,6 +22,12 @@ export default async function AdminCyclesPage() {
     CLOSED: 'bg-green-100 text-green-700',
   }
 
+  const cardTheme = {
+    DRAFT: 'border-l-4 border-l-gray-300 bg-white',
+    OPEN: 'border-l-4 border-l-blue-400 bg-gradient-to-r from-blue-50/40 to-white',
+    CLOSED: 'border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-50/40 to-white',
+  }
+
   return (
     <div>
       <div className="mb-6">
@@ -46,7 +52,7 @@ export default async function AdminCyclesPage() {
                 <Link
                   key={c.id}
                   href={`/dashboard/admin/review-cycles/${c.id}`}
-                  className="bg-white rounded-xl border border-gray-200 p-5 block hover:shadow-sm transition-shadow"
+                  className={`rounded-xl border border-gray-200 p-5 block transition-all hover:shadow-md hover:-translate-y-0.5 ${cardTheme[c.status]}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
